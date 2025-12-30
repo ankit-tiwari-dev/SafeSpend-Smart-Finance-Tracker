@@ -1,0 +1,201 @@
+/**
+ * Enterprise Finance SaaS Theme System
+ * 
+ * Persona: Innovative + Enterprise-focused
+ * Values: reliability, forward-thinking, data-driven, scalable, secure
+ * Target: financial teams, executives, operations, finance admins
+ * Tone: modern, precise, minimal clutter, high readability
+ * 
+ * Brand Colors:
+ * - Primary: Bold blue-green (trust, innovation)
+ * - Base: Restrained neutrals
+ * - Accent: Strategic highlights
+ */
+
+/* ============================================
+   LIGHT THEME (Day Theme)
+   ============================================ */
+
+:root {
+  /* Studio Premiere - High-Contrast Institutional Vibe */
+  color-scheme: light;
+  --color-primary: #0f172a;
+  --color-primary-rgb: 15, 23, 42;
+  --color-primary-600: #1e293b;
+  --color-primary-500: #0f172a;
+  --color-primary-contrast: #ffffff;
+  --color-brand-logo: #0f172a;
+  --color-brand-logo-contrast: #ffffff;
+
+  /* Secondary Colors - Digital Cyan Accents */
+  --color-secondary: #00d1ff;
+  --color-secondary-rgb: 0, 209, 255;
+  --color-secondary-600: #00b8e6;
+
+  /* Background & Surface - Alabaster Studio */
+  --color-bg: #f8fafc;
+  --color-bg-rgb: 248, 250, 252;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f5f9;
+  --color-sidebar: #ffffff;
+
+  /* Glassmorphism 2.0 - Studio Glass */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(15, 23, 42, 0.08);
+  --glass-blur: 32px;
+  --radiant-glow: 0 0 40px rgba(15, 23, 42, 0.03);
+
+  /* Elite Light Typography - High Precision */
+  --color-text: #020617;
+  --color-text-muted: #64748b;
+
+  /* Borders & Dividers - Studio Thinness */
+  --color-border: rgba(15, 23, 42, 0.1);
+  --color-divider: rgba(15, 23, 42, 0.05);
+
+  /* Status Colors - Elite Professional Tones */
+  --color-success: #10b981;
+  --color-success-600: #059669;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  /* Chart Colors - Studio Executive Palette */
+  --color-chart-1: #0f172a;
+  /* Deep Slate */
+  --color-chart-2: #00d1ff;
+  /* Electric Cyan */
+  --color-chart-3: #8b5cf6;
+  /* Modern Violet */
+  --color-chart-4: #f43f5e;
+  /* Rose Red */
+
+  /* Money Metrics - Tactical Visibility */
+  --color-money-1: #0f172a;
+  --color-money-2: #ef4444;
+  --color-money-3: #10b981;
+  --color-money-4: #f59e0b;
+
+  /* Semantic Shadows - Soft Studio Depth */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 10px 15px -3px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 25px 50px -12px rgba(15, 23, 42, 0.12);
+  --shadow-card: 0 20px 40px rgba(15, 23, 42, 0.05);
+}
+
+/* ============================================
+   DARK THEME (Night Theme)
+   ============================================ */
+
+[data-theme="dark"],
+:root[data-theme="dark"] {
+  /* Premium 3.0 - The Vault Palette */
+  color-scheme: dark;
+  --color-primary: #00e5ff;
+  --color-primary-rgb: 0, 229, 255;
+  /* Electric Blue */
+  --color-primary-600: #00b8cc;
+  --color-primary-500: #00e5ff;
+  --color-primary-contrast: #050505;
+  --color-brand-logo: #0f172a;
+  /* Consistent Brand Anchor */
+  --color-brand-logo-contrast: #ffffff;
+
+  /* Secondary Colors - Vibrant Accents */
+  --color-secondary: #00ffa3;
+  --color-secondary-rgb: 0, 255, 163;
+  /* Radiant Emerald */
+  --color-secondary-600: #00cc82;
+
+  /* Background & Surface - Ultra-Deep Foundation */
+  --color-bg: #050505;
+  --color-bg-rgb: 5, 5, 5;
+  /* True Black */
+  --color-surface: #0f1115;
+  /* Deep Charcoal */
+  --color-surface-hover: #161a22;
+  --color-sidebar: #050505;
+
+  /* Premium 3.0 - Thin-Glass Architecture */
+  --glass-bg: rgba(255, 255, 255, 0.02);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-blur: 24px;
+  --radiant-glow: 0 0 30px rgba(0, 229, 255, 0.08);
+
+  /* Elite Typography Colors */
+  --color-text: #ffffff;
+  --color-text-muted: #8e94a1;
+
+  /* Borders & Dividers - Atomic Thinness */
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-divider: rgba(255, 255, 255, 0.03);
+
+  /* Status Colors - High-Luminance Adjustments */
+  --color-success: #00ffa3;
+  --color-success-600: #00cc82;
+  --color-warning: #ffcc00;
+  --color-error: #ff3366;
+
+  /* Chart Colors - Executive Jewel Palette */
+  --color-chart-1: #0088ff;
+  /* Sapphire */
+  --color-chart-2: #00cc88;
+  /* Emerald */
+  --color-chart-3: #9933ff;
+  /* Amethyst */
+  --color-chart-4: #ffaa00;
+  /* Amber Gold */
+
+  /* Money Metrics - High Visibility */
+  --color-money-1: #00e5ff;
+  /* Income */
+  --color-money-2: #ff3366;
+  /* Expense */
+  --color-money-3: #00ffa3;
+  /* Profit */
+  --color-money-4: #ffcc00;
+  /* Forecast */
+
+  /* Semantic Shadows - Deep Depth */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.8);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+
+/* ============================================
+   Theme Transition
+   ============================================ */
+
+* {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* ============================================
+   Accessibility Enhancements
+   ============================================ */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: #000000;
+    --color-divider: #000000;
+    --color-text-muted: #000000;
+  }
+
+  [data-theme="dark"] {
+    --color-border: #ffffff;
+    --color-divider: #ffffff;
+    --color-text-muted: #ffffff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
