@@ -7,6 +7,7 @@
 **Institutional-Grade Financial Intelligence Platform**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-00e5ff.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](CHANGELOG.md)
 [![React](https://img.shields.io/badge/React-19.1.0-00e5ff?logo=react)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-20+-00ffa3?logo=node.js)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-8.0-00e5ff?logo=mongodb)](https://www.mongodb.com/)
