@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/Inputs/Input";
 import { validateEmail } from "../../utils/helper";
 import axiosInstance from "../../utils/axiosInstance";
-import { API_PATHS } from "../../utils/apiPaths";
+import { API_PATHS, BASE_URL } from "../../utils/apiPaths";
 import { UserContext } from "../../context/UserContext";
 
 const LoginPage = () => {
@@ -107,8 +107,7 @@ const LoginPage = () => {
           <button
             type="button"
             onClick={() => {
-              const backend = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
-              window.location.href = `${backend}/api/v1/auth/google`;
+              window.location.href = `${BASE_URL}/api/v1/auth/google`;
             }}
             className="w-full py-4 text-xs font-black uppercase tracking-widest border-2 border-[var(--color-divider)] hover:border-[var(--color-primary)] hover:bg-[var(--color-divider)] rounded-2xl transition-all duration-300 flex items-center justify-center gap-3"
           >
