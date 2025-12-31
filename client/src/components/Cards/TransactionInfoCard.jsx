@@ -12,9 +12,9 @@ const TransactionInfoCard = (props) => {
   const isIncome = type === "income";
 
   return (
-    <div className="group relative flex items-center gap-6 p-6 rounded-[32px] transition-all duration-500 hover:bg-[var(--color-divider)] border border-transparent hover:border-[var(--color-border)] mt-2">
+    <div className="group relative flex items-center gap-3 sm:gap-6 p-4 sm:p-6 rounded-[24px] sm:rounded-[32px] transition-all duration-500 hover:bg-[var(--color-divider)] border border-transparent hover:border-[var(--color-border)] mt-2">
       <div
-        className={`w-16 h-16 rounded-[24px] flex items-center justify-center text-2xl border transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 flex-shrink-0 shadow-2xl ${isIncome
+        className={`w-12 h-12 sm:w-16 sm:h-16 rounded-[18px] sm:rounded-[24px] flex items-center justify-center text-xl sm:text-2xl border transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 flex-shrink-0 shadow-2xl ${isIncome
           ? "bg-primary/10 border-primary/20 text-primary shadow-[0_4px_20px_color-mix(in_srgb,var(--color-primary),transparent_90%)]"
           : "bg-[var(--color-chart-4)]/10 border-[var(--color-chart-4)]/20 text-[var(--color-chart-4)] shadow-[0_4px_20px_color-mix(in_srgb,var(--color-error),transparent_90%)]"
           }`}

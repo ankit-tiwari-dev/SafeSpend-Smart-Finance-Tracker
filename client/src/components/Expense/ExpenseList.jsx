@@ -7,9 +7,9 @@ const ExpenseList = (props) => {
 
   return (
     <div className="bg-[var(--color-surface)] backdrop-blur-xl p-8 rounded-[38px] border border-[var(--color-border)] shadow-xl">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
         <div className="flex items-center gap-3">
-          <h5 className="text-2xl font-black tracking-tight text-[var(--color-text)]">Burn Ledger</h5>
+          <h5 className="text-xl sm:text-2xl font-black tracking-tight text-[var(--color-text)]">Burn Ledger</h5>
           <div className="hidden sm:block px-2 py-0.5 rounded-md bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest">{transactions?.length || 0} Entries</div>
         </div>
 
