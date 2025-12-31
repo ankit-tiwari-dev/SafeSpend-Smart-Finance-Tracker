@@ -182,17 +182,23 @@ const Profile = () => {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setClearAllTransactions(true)}
-                    className="p-4 rounded-2xl bg-white/[0.02] text-white/30 hover:text-red-500 hover:bg-red-500/10 border border-white/5 transition-all"
+                    className="group relative px-6 py-4 rounded-2xl bg-white/[0.02] hover:bg-red-500/10 border border-white/5 hover:border-red-500/20 transition-all"
                     title="Wipe Ledger"
                   >
-                    <LuTrash2 size={20} />
+                    <div className="flex items-center gap-3">
+                      <LuTrash2 size={20} className="text-white/30 group-hover:text-red-500 transition-colors" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/30 group-hover:text-red-500 transition-colors">Wipe Data</span>
+                    </div>
                   </button>
                   <button
                     onClick={() => setDeleteAccount(true)}
-                    className="p-4 rounded-2xl bg-white/[0.02] text-white/30 hover:text-red-500 hover:bg-red-500/10 border border-white/5 transition-all"
+                    className="group relative px-6 py-4 rounded-2xl bg-white/[0.02] hover:bg-red-500/10 border border-white/5 hover:border-red-500/20 transition-all"
                     title="Terminate Node"
                   >
-                    <LuBan size={20} />
+                    <div className="flex items-center gap-3">
+                      <LuBan size={20} className="text-white/30 group-hover:text-red-500 transition-colors" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/30 group-hover:text-red-500 transition-colors">Delete Account</span>
+                    </div>
                   </button>
                 </div>
               </>
@@ -206,7 +212,7 @@ const Profile = () => {
                 </button>
                 <button
                   onClick={handleUpdateProfile}
-                  className="py-4 px-10 rounded-2xl bg-secondary text-[var(--color-primary-contrast)] shadow-2xl shadow-secondary/20 hover:scale-[1.05] transition-all font-black uppercase tracking-widest text-[10px]"
+                  className="py-4 px-10 rounded-2xl bg-primary text-[var(--color-primary-contrast)] shadow-2xl shadow-primary/20 hover:scale-[1.05] transition-all font-black uppercase tracking-widest text-[10px]"
                 >
                   Commit Matrix
                 </button>
@@ -241,7 +247,7 @@ const Profile = () => {
                 </div>
 
                 {isEditing && (
-                  <label className="absolute bottom-4 right-4 p-5 bg-primary text-black rounded-3xl cursor-pointer shadow-2xl hover:scale-110 active:scale-95 transition-all z-20 border-4 border-[#050505]">
+                  <label className="absolute bottom-4 right-4 p-5 bg-primary text-[var(--color-primary-contrast)] rounded-3xl cursor-pointer shadow-2xl hover:scale-110 active:scale-95 transition-all z-20 border-4 border-[var(--color-surface)]">
                     <LuPencil size={24} />
                     <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
                   </label>
