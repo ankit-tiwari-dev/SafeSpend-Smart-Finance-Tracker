@@ -15,54 +15,38 @@ const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const { updateUser } = useContext(UserContext);
-
-  const [error, setError] = useState(null);
-
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-
-    let profileImageUrl = "";
-
-    if (!fullName) {
-      setError("Full name cannot be empty!");
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address!");
-      return;
-    }
-
-    if (!password) {
-      setError("Please enter a password!");
-      return;
-    }
-
-    if (!confirmPassword) {
-      setError("Please confirm your password!");
-      return;
-    }
-
-    if (confirmPassword !== password) {
-      setError("Passwords do not match!");
-      return;
-    }
-
     setError("");
 
+    // Trim inputs
+    const trimmedName = fullName.trim();
+    const trimmedEmail = email.trim();
+
+    if (!trimmedName) return setError("Full name cannot be empty!");
+    if (!validateEmail(trimmedEmail)) return setError("Please enter a valid email address!");
+    if (!password) return setError("Please enter a password!");
+    if (!confirmPassword) return setError("Please confirm your password!");
+    if (password !== confirmPassword) return setError("Passwords do not match!");
+
+    setLoading(true);
+
     try {
+      let profileImageUrl = "";
       if (profilePic) {
         const imgUploadRes = await uploadImage(profilePic);
         profileImageUrl = imgUploadRes.imageUrl || "";
       }
 
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
-        fullName,
-        email,
+        fullName: trimmedName,
+        email: trimmedEmail,
         password,
         profileImageUrl,
       });
@@ -75,13 +59,9 @@ const SignUpPage = () => {
         navigate("/dashboard");
       }
     } catch (err) {
-      if (err.response && err.response.data) {
-        setError(
-          err.response.data.message || "Sign up failed, please try again.",
-        );
-      } else {
-        setError("An unexpected error occurred, please try again later.");
-      }
+      setError(err.response?.data?.message || "Sign up failed, please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -140,13 +120,17 @@ const SignUpPage = () => {
           )}
 
           <div className="pt-4">
-            <button type="submit" className="btn-primary w-full py-4 text-sm tracking-[0.3em]">
-              ESTABLISH SAFESPEND ID
+            <button
+              type="submit"
+              className={`btn-primary w-full py-4 text-sm tracking-[0.3em] ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+              disabled={loading}
+            >
+              {loading ? "Establishing ID..." : "ESTABLISH SAFESPEND ID"}
             </button>
           </div>
 
           <p className="text-xs font-bold text-center text-[var(--color-text-muted)]">
-            Already authenticated? {" "}
+            Already authenticated?{" "}
             <Link className="text-[var(--color-primary)] hover:underline ml-1" to="/login">
               Portal Access
             </Link>

@@ -1,93 +1,118 @@
+import React from "react";
 import moment from "moment";
 import { FaPen, FaTrash } from "react-icons/fa";
-import { addThousandsSeparator } from "../../utils/helper";
+import { formatAmount } from "../../utils/helper";
 
 const BudgetCard = ({ budget, onEdit, onDelete }) => {
-  const { category, spent, limit, _id } = budget;
+  if (!budget) {
+    return (
+      <div className="bg-[var(--color-surface)] p-6 rounded-3xl border border-dashed border-[var(--color-border)] text-center text-sm text-[var(--color-text-muted)] opacity-60">
+        No budget data available
+      </div>
+    );
+  }
 
-  const percent = Math.min(100, (spent / limit) * 100);
-  const isOver = spent > limit;
+  const {
+    category = "Untitled",
+    spent = 0,
+    limit = 0,
+    _id,
+    month,
+  } = budget;
+
+  const safeLimit = limit > 0 ? limit : 1;
+  const percent = Math.min(100, (spent / safeLimit) * 100);
+  const isOver = spent > limit && limit > 0;
 
   return (
-    <div className="group relative bg-[var(--color-surface)] p-10 rounded-[56px] border border-[var(--color-border)] transition-all duration-500 hover:scale-[1.02] hover:border-primary/30 hover:shadow-2xl hover:shadow-[0_20px_50px_color-mix(in_srgb,var(--color-primary),transparent_95%)] flex flex-col min-h-[320px]">
-      {/* Background Glow Atmospheric */}
-      <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 blur-[100px] rounded-full group-hover:bg-primary/10 transition-colors pointer-events-none" />
+    <div className="group relative bg-[var(--color-surface)] p-6 sm:p-8 lg:p-10 rounded-3xl sm:rounded-[48px] border border-[var(--color-border)] transition-all duration-500 hover:scale-[1.02] hover:border-primary/30 hover:shadow-2xl flex flex-col min-h-[260px] sm:min-h-[300px]">
+      
+      {/* Background glow */}
+      <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 blur-[90px] rounded-full pointer-events-none" />
 
-      <div className="flex justify-between items-start mb-10">
-        <div className="space-y-2">
-          <h3 className="text-2xl font-black tracking-tighter text-[var(--color-text)]">
+      {/* Header */}
+      <div className="flex justify-between items-start mb-6 sm:mb-8 gap-4">
+        <div className="space-y-2 min-w-0">
+          <h3 className="text-lg sm:text-xl lg:text-2xl font-black tracking-tight truncate">
             {category}
           </h3>
-          <div className="inline-flex py-1.5 px-4 rounded-xl bg-[var(--color-divider)] border border-[var(--color-border)] text-[9px] uppercase font-black tracking-[0.3em] text-primary/60">
-            {moment(budget.month, "YYYY-MM").format("MMMM YYYY")}
-          </div>
+          {month && (
+            <div className="inline-flex py-1 px-3 rounded-lg bg-[var(--color-divider)] border border-[var(--color-border)] text-[9px] uppercase font-black tracking-widest text-primary/60">
+              {moment(month, "YYYY-MM").format("MMMM YYYY")}
+            </div>
+          )}
         </div>
 
-        <div className="flex gap-2 relative z-10">
+        {/* Actions */}
+        <div className="flex gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => onEdit(budget)}
-            className="p-3 rounded-2xl bg-[var(--color-divider)] text-[var(--color-text-muted)] opacity-40 hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20"
+            disabled={!limit}
+            className="p-2.5 rounded-xl bg-[var(--color-divider)] text-[var(--color-text-muted)] hover:text-primary hover:bg-primary/10 transition disabled:opacity-30"
+            title="Edit Budget"
           >
-            <FaPen size={14} />
+            <FaPen size={13} />
           </button>
+
           <button
             onClick={() => onDelete(_id)}
-            className="p-3 rounded-2xl bg-[var(--color-divider)] text-[var(--color-text-muted)] opacity-40 hover:text-red-500 hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20"
+            disabled={!limit}
+            className="p-2.5 rounded-xl bg-[var(--color-divider)] text-[var(--color-text-muted)] hover:text-red-500 hover:bg-red-500/10 transition disabled:opacity-30"
+            title="Delete Budget"
           >
-            <FaTrash size={14} />
+            <FaTrash size={13} />
           </button>
         </div>
       </div>
 
-      <div className="flex justify-between items-end mb-8 relative z-10">
-        <div className="space-y-2">
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--color-text-muted)] opacity-20">Drain State</p>
-          <div className={`text-4xl font-black tracking-tighter tabular-nums ${isOver ? 'text-red-500' : 'text-[var(--color-text)]'}`}>
-            <span className="text-xl opacity-30 mr-1.5">₹</span>{addThousandsSeparator(spent)}
+      {/* Amounts */}
+      <div className="flex justify-between items-end mb-6 gap-4">
+        <div>
+          <p className="text-[9px] uppercase tracking-widest opacity-30">
+            Spent
+          </p>
+          <div
+            className={`text-2xl sm:text-3xl lg:text-4xl font-black tabular-nums ${isOver ? "text-red-500" : ""}`}
+            title={`₹${spent}`}
+          >
+            <span className="text-lg opacity-30 mr-1">₹</span>
+            {formatAmount(spent)}
           </div>
         </div>
-        <div className="text-right space-y-2">
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--color-text-muted)] opacity-20">Cap Limit</p>
-          <div className="text-xl font-black text-[var(--color-text-muted)] opacity-40 tabular-nums">
-            ₹{addThousandsSeparator(limit)}
-          </div>
-        </div>
-      </div>
 
-      <div className="relative h-2.5 w-full bg-[var(--color-bg)] rounded-full overflow-hidden border border-[var(--color-border)] p-0.5">
-        <div
-          className={`h-full rounded-full transition-all duration-1000 ease-out relative ${isOver ? 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'bg-primary shadow-[0_0_15px_rgba(0,229,255,0.5)]'}`}
-          style={{ width: `${percent}%` }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[45deg] animate-[shimmer_2s_infinite]" />
-        </div>
-      </div>
-
-      <div className="mt-10 flex justify-between items-center pt-6 border-t border-[var(--color-divider)]">
-        <div className="flex items-center gap-3">
-          <div className={`w-2.5 h-2.5 rounded-full ${isOver ? 'bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,1)]' : 'bg-secondary shadow-[0_0_10px_rgba(0,255,163,0.5)]'}`} />
-          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--color-text-muted)] opacity-40">
-            {isOver ? 'Threshold Breached' : 'Structural Integrity'}
-          </span>
-        </div>
         <div className="text-right">
-          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--color-text-muted)] opacity-20 mr-3">Delta</span>
-          <span className={`text-sm font-black tabular-nums ${isOver ? 'text-red-500' : 'text-secondary'}`}>
-            ₹{addThousandsSeparator(Math.max(0, limit - spent))}
-          </span>
+          <p className="text-[9px] uppercase tracking-widest opacity-30">
+            Limit
+          </p>
+          <div
+            className="text-sm sm:text-base font-black opacity-50"
+            title={`₹${limit}`}
+          >
+            ₹{formatAmount(limit)}
+          </div>
         </div>
       </div>
 
-      <style>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-150%) skewX(-45deg); }
-          100% { transform: translateX(150%) skewX(-45deg); }
-        }
-      `}</style>
+      {/* Progress */}
+      <div className="relative h-2.5 w-full bg-[var(--color-bg)] rounded-full overflow-hidden border border-[var(--color-border)]">
+        <div
+          className={`h-full rounded-full transition-all duration-700 ${isOver ? "bg-red-500" : "bg-primary"}`}
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+
+      {/* Footer */}
+      <div className="mt-auto pt-5 flex justify-between items-center text-xs opacity-60">
+        <span>{isOver ? "Limit exceeded" : "Within limit"}</span>
+        <span
+          className={`font-bold ${isOver ? "text-red-500" : "text-secondary"}`}
+          title={`₹${Math.max(0, limit - spent)}`}
+        >
+          ₹{formatAmount(Math.max(0, limit - spent))}
+        </span>
+      </div>
     </div>
   );
 };
-
-
 
 export default BudgetCard;

@@ -10,55 +10,29 @@ const AddExpenseForm = ({ onAddExpense }) => {
     icon: "",
   });
 
-  const handleChange = (key, value) => setExpense({ ...expense, [key]: value });
+  const handleChange = (key, value) =>
+    setExpense((prev) => ({ ...prev, [key]: value }));
 
   return (
-    <div className="space-y-4 text-gray-900 dark:text-gray-100">
+    <div className="space-y-4">
       <EmojiPickerPopup
         icon={expense.icon}
-        onSelect={(selectedIcon) => handleChange("icon", selectedIcon)}
+        onSelect={(icon) => handleChange("icon", icon)}
       />
 
-      <Input
-        label="Expense Category"
-        placeholder="Food, Transport, etc."
-        type="text"
-        value={expense.category}
-        onChange={(e) => handleChange("category", e.target.value)}
-      />
+      <Input label="Expense Category" value={expense.category} onChange={(e) => handleChange("category", e.target.value)} />
+      <Input label="Amount" type="number" value={expense.amount} onChange={(e) => handleChange("amount", e.target.value)} />
+      <Input label="Date" type="date" value={expense.date} onChange={(e) => handleChange("date", e.target.value)} />
 
-      <Input
-        label="Amount"
-        placeholder="Enter amount"
-        type="number"
-        value={expense.amount}
-        onChange={(e) => handleChange("amount", e.target.value)}
-      />
-
-      <Input
-        label="Date"
-        type="date"
-        value={expense.date}
-        onChange={(e) => handleChange("date", e.target.value)}
-      />
-
-      <div className="flex justify-end pt-4">
-        <button
-          type="button"
-          onClick={() => {
-            onAddExpense(expense);
-            setExpense({
-              category: "",
-              amount: "",
-              date: "",
-              icon: "",
-            });
-          }}
-          className="add-btn primary-btn-fill"
-        >
-          Add Expense
-        </button>
-      </div>
+      <button
+        onClick={() => {
+          onAddExpense({ ...expense, type: "expense" });
+          setExpense({ category: "", amount: "", date: "", icon: "" });
+        }}
+        className="w-full sm:w-auto px-6 py-3 text-sm font-bold rounded-xl bg-primary text-white hover:opacity-90 transition"
+      >
+        Add Expense
+      </button>
     </div>
   );
 };

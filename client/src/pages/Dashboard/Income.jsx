@@ -22,122 +22,127 @@ const IncomePage = () => {
   const [openModal, setOpenModal] = useState(false);
   const [incomeToEdit, setIncomeToEdit] = useState(null);
 
-  // Get All Income Transactions
   const fetchIncomeTransactions = async () => {
-    if (loading) return;
     setLoading(true);
-
     try {
       const response = await axiosInstance.get(API_PATHS.INCOME.GET_ALL_INCOME);
-
       if (response.data) {
         setIncomeData(response.data);
       }
     } catch (error) {
       console.error("Error fetching income transactions:", error);
+      toast.error("Failed to synchronize inflow data.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle Add/Update Income
   const handleSaveIncome = async (income) => {
     try {
       if (incomeToEdit) {
         await axiosInstance.put(API_PATHS.INCOME.UPDATE_INCOME(incomeToEdit._id), income);
-        toast.success("Income updated successfully!");
+        toast.success("Revenue stream updated");
       } else {
         await axiosInstance.post(API_PATHS.INCOME.ADD_INCOME, income);
-        toast.success("Income added successfully!");
+        toast.success("New inflow logged successfully");
       }
 
       setOpenModal(false);
       fetchIncomeTransactions();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(error.response?.data?.message || "Protocol error: check connectivity");
     }
   };
 
-  // Handle Delete Income
   const deleteIncome = async (id) => {
     try {
       await axiosInstance.delete(API_PATHS.INCOME.DELETE_INCOME(id));
-
       setOpenDeleteAlert({ show: false, data: null });
-      toast.success("Income deleted successfully!");
+      toast.success("Transaction purged from registry");
       fetchIncomeTransactions();
     } catch (error) {
-      console.error("Error deleting income:", error);
+      toast.error("Failed to redact transaction");
     }
   };
 
-  // Handle download income details
   const handleDownloadIncomeDetails = async () => {
     try {
-      const response = await axiosInstance.get(
-        API_PATHS.INCOME.DOWNLOAD_INCOME,
-        {
-          responseType: "blob",
-        },
-      );
+      const response = await axiosInstance.get(API_PATHS.INCOME.DOWNLOAD_INCOME, {
+        responseType: "blob",
+      });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "income_details.xlsx");
+      link.setAttribute("download", `Inflow_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading income details:", error);
-      toast.error("Failed to download income details.");
+      toast.error("Export protocol failed");
     }
   };
 
   useEffect(() => {
     fetchIncomeTransactions();
-    return () => { };
   }, []);
 
   return (
     <DashboardLayout activeMenu="Income">
-      <div className="py-12 max-w-[1600px] mx-auto space-y-16 px-4">
-        <div className="space-y-3">
-          <h2 className="text-sm font-black uppercase tracking-[0.4em] text-[var(--color-text)]">
-            Capital Inflow
-          </h2>
-          <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">
-            Optimization and tracking of all revenue streams
-          </p>
-          <div className="h-px w-32 bg-gradient-to-r from-primary/40 to-transparent pt-0.5" />
+      <div className="py-8 sm:py-12 max-w-[1600px] mx-auto space-y-10 sm:space-y-16 px-4 sm:px-6 lg:px-8">
+        
+        {/* Header Section */}
+        <div className="relative group">
+          <div className="space-y-3 relative z-10">
+            <h2 className="text-xs sm:text-sm font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[var(--color-text)]">
+              Capital Inflow
+            </h2>
+            <p className="text-[9px] sm:text-[10px] font-black text-primary uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-80">
+              Optimization and tracking of all revenue streams
+            </p>
+            <div className="h-[2px] w-24 sm:w-32 bg-gradient-to-r from-primary to-transparent transition-all duration-500 group-hover:w-48" />
+          </div>
+          {/* Background Highlight */}
+          <div className="absolute -top-10 -left-10 w-32 h-32 bg-primary/5 blur-[60px] pointer-events-none" />
         </div>
 
-        <div className="grid grid-cols-1 gap-16">
-          <IncomeOverview
-            transactions={incomeData}
-            onAddIncome={() => {
-              setIncomeToEdit(null);
-              setOpenModal(true);
-            }}
-          />
+        {/* Content Section */}
+        <div className="grid grid-cols-1 gap-12 sm:gap-16">
+          
+          {/* Overview Section - Charts & Stats */}
+          <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <IncomeOverview
+              transactions={incomeData}
+              isLoading={loading}
+              onAddIncome={() => {
+                setIncomeToEdit(null);
+                setOpenModal(true);
+              }}
+            />
+          </section>
 
-          <IncomeList
-            transactions={incomeData}
-            onEdit={(income) => {
-              setIncomeToEdit(income);
-              setOpenModal(true);
-            }}
-            onDelete={(id) => {
-              setOpenDeleteAlert({
-                show: true,
-                data: id,
-              });
-            }}
-            onDownload={handleDownloadIncomeDetails}
-          />
+          {/* List Section - Table/Records */}
+          <section className="rounded-[32px] sm:rounded-[48px] border border-white/5 bg-white/[0.01] overflow-hidden">
+            <IncomeList
+              transactions={incomeData}
+              isLoading={loading}
+              onEdit={(income) => {
+                setIncomeToEdit(income);
+                setOpenModal(true);
+              }}
+              onDelete={(id) => {
+                setOpenDeleteAlert({
+                  show: true,
+                  data: id,
+                });
+              }}
+              onDownload={handleDownloadIncomeDetails}
+            />
+          </section>
         </div>
 
+        {/* Modal Components */}
         <AddEditIncomeModal
           isOpen={openModal}
           onClose={() => setOpenModal(false)}
@@ -148,14 +153,12 @@ const IncomePage = () => {
         <Modal
           isOpen={openDeleteAlert.show}
           onClose={() => setOpenDeleteAlert({ show: false, data: null })}
-          title="Delete Transaction"
+          title="Security Override"
         >
-          <div className="p-4">
+          <div className="p-4 sm:p-6 bg-[#0a0a0a]">
             <ConfirmAlert
-              content="This action is irreversible. Are you sure you want to purge this transaction?"
-              onConfirm={() => {
-                deleteIncome(openDeleteAlert.data);
-              }}
+              content="This action is irreversible. Are you sure you want to purge this revenue transaction from the ledger?"
+              onConfirm={() => deleteIncome(openDeleteAlert.data)}
               confirmContent="Purge Transaction"
               color="error"
             />

@@ -1,117 +1,65 @@
-import { useState } from "react";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Legend,
-  Tooltip,
-  Sector,
-} from "recharts";
-import CustomTooltip from "./CustomTooltip";
-import CustomLegend from "./CustomLegend";
-import { addThousandsSeparator } from "../../utils/helper";
+import React, { useState } from "react";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { formatCompactAmount } from "../../utils/helper";
 
-const CustomPieChart = (props) => {
-  const { data, label, totalAmount, colors, showTextAnchor } = props;
-  const [activeIndex, setActiveIndex] = useState(-1);
+const CustomPieChart = ({ data = [], colors = [], totalAmount = "₹0", label = "NET WORTH" }) => {
+  const [activeIndex, setActiveIndex] = useState(null);
+  const hasData = data && data.length > 0;
 
-  const formattedAmount = typeof totalAmount === 'string' && totalAmount.startsWith('₹')
-    ? `₹${addThousandsSeparator(totalAmount.substring(1))}`
-    : totalAmount;
-
-  const onPieEnter = (_, index) => {
-    setActiveIndex(index);
-  };
-
-  const onPieLeave = () => {
-    setActiveIndex(-1);
+  const getDisplayValue = (index) => {
+    // Proper bounds checking
+    if (index === null || !data[index]) return "0";
+    const item = data[index];
+    const value = item.raw !== undefined ? item.raw : item.amount;
+    return formatCompactAmount(value);
   };
 
   return (
-    <div className="w-full h-[400px]">
+    <div className="relative w-full h-full flex items-center justify-center group">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="w-[82%] h-[82%] border border-white/5 rounded-full" />
+        <div className="absolute w-[95%] h-[95%] border border-dashed border-white/5 rounded-full opacity-10 animate-[spin_120s_linear_infinite]" />
+      </div>
+
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
-          <defs>
-            {colors.map((color, index) => (
-              <linearGradient key={`gradient-${index}`} id={`gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={color} stopOpacity={0.8} />
-                <stop offset="95%" stopColor={color} stopOpacity={1} />
-              </linearGradient>
-            ))}
-          </defs>
           <Pie
-            data={data}
-            dataKey="amount"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={140}
-            innerRadius={110}
-            paddingAngle={2}
-            labelLine={false}
-            stroke="none"
-            activeIndex={activeIndex}
-            activeShape={(props) => {
-              const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
-              return (
-                <g>
-                  <Sector
-                    cx={cx}
-                    cy={cy}
-                    innerRadius={innerRadius}
-                    outerRadius={outerRadius + 6}
-                    startAngle={startAngle}
-                    endAngle={endAngle}
-                    fill={fill}
-                  />
-                </g>
-              );
-            }}
-            onMouseEnter={onPieEnter}
-            onMouseLeave={onPieLeave}
+            data={hasData ? data : [{ amount: 1 }]}
+            cx="50%" cy="50%"
+            innerRadius="80%" outerRadius="92%"
+            paddingAngle={hasData ? 12 : 0}
+            dataKey="amount" stroke="none"
+            onMouseEnter={(_, index) => setActiveIndex(index)}
+            onMouseLeave={() => setActiveIndex(null)}
           >
-            {data.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={`url(#gradient-${index % colors.length})`}
-                className="transition-all duration-500 cursor-pointer"
+            {hasData && data.map((entry, index) => (
+              <Cell 
+                key={index} 
+                fill={colors[index % colors.length]} 
+                style={{
+                  filter: activeIndex === index ? `drop-shadow(0 0 10px ${colors[index % colors.length]})` : 'none',
+                  opacity: activeIndex === null || activeIndex === index ? 1 : 0.3,
+                  transition: 'all 0.3s ease'
+                }}
               />
             ))}
           </Pie>
-          <Tooltip content={<CustomTooltip colors={colors} data={data} />} />
-          <Legend content={<CustomLegend />} />
-
-          {showTextAnchor && (
-            <g>
-              <text
-                x="50%"
-                y="50%"
-                dy={-10}
-                textAnchor="middle"
-                fill="var(--color-primary)"
-                fontSize="10px"
-                fontWeight="800"
-                className="uppercase tracking-[0.5em] opacity-40 shadow-sm"
-              >
-                {label}
-              </text>
-              <text
-                x="50%"
-                y="50%"
-                dy={26}
-                textAnchor="middle"
-                fill="var(--color-text)"
-                fontSize="36px"
-                fontWeight="700"
-                className="tracking-tighter tabular-nums drop-shadow-md"
-              >
-                {formattedAmount}
-              </text>
-            </g>
-          )}
         </PieChart>
       </ResponsiveContainer>
+
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none px-6">
+        <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.4em] text-primary/60 mb-1 truncate w-full">
+          {/* ✅ FIXED: Added bounds checking to prevent TypeError */}
+          {activeIndex !== null && data[activeIndex] ? data[activeIndex].name : label}
+        </span>
+        <h2 className="text-[var(--color-text)] font-black italic tracking-tighter leading-none"
+            style={{ fontSize: "clamp(1.4rem, 8vw, 2.4rem)" }}>
+          {activeIndex !== null ? `₹${getDisplayValue(activeIndex)}` : totalAmount}
+        </h2>
+        <div className="mt-3 flex gap-1">
+          <div className={`h-[2px] w-4 rounded-full transition-all duration-500 ${activeIndex !== null ? 'bg-primary' : 'bg-white/10'}`} />
+        </div>
+      </div>
     </div>
   );
 };

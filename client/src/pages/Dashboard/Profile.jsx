@@ -7,13 +7,9 @@ import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import { toast } from "react-hot-toast";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import Input from "../../components/Inputs/Input";
-import CharAvatar from "../../components/Cards/CharAvatar";
-import Textarea from "../../components/Inputs/Textarea";
-import SettingButton from "../../components/Profile/SettingButton";
 import Modal from "../../components/Modal";
 import ConfirmAlert from "../../components/ConfirmAlert";
-import { LuPencil, LuTrash2, LuBan } from "react-icons/lu";
+import { LuPencil, LuTrash2, LuBan, LuCamera } from "react-icons/lu";
 
 const Profile = () => {
   useUserAuth();
@@ -63,8 +59,7 @@ const Profile = () => {
         });
       }
     } catch (error) {
-      toast.error("Failed to fetch user profile. Please try again.");
-      console.error("Error fetching user profile:", error);
+      toast.error("Failed to sync identity matrix.");
     } finally {
       setLoading(false);
     }
@@ -74,8 +69,7 @@ const Profile = () => {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
-      const preview = URL.createObjectURL(file);
-      setPreviewUrl(preview);
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
@@ -84,7 +78,6 @@ const Profile = () => {
     try {
       let profileImageUrl = userProfile.profileImageUrl;
 
-      // 1. Upload image if selected
       if (selectedFile) {
         const formData = new FormData();
         formData.append("image", selectedFile);
@@ -94,7 +87,6 @@ const Profile = () => {
         profileImageUrl = uploadRes.data.imageUrl;
       }
 
-      // 2. Update profile data
       const response = await axiosInstance.put(API_PATHS.AUTH.UPDATE_PROFILE, {
         ...profileData,
         profileImageUrl,
@@ -103,12 +95,11 @@ const Profile = () => {
       if (response.status === 200) {
         setUserProfile(response.data);
         setIsEditing(false);
-        toast.success("Profile updated successfully!");
+        toast.success("Signature updated.");
         fetchUserProfile();
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error(error.response?.data?.message || "Failed to update profile.");
+      toast.error("Protocol error during update.");
     } finally {
       setLoading(false);
     }
@@ -116,35 +107,25 @@ const Profile = () => {
 
   const handleClearAllTransactions = async () => {
     try {
-      const income_response = await axiosInstance.delete(
-        API_PATHS.INCOME.DELETE_ALL_INCOME,
-      );
-      const expense_response = await axiosInstance.delete(
-        API_PATHS.EXPENSE.DELETE_ALL_EXPENSE,
-      );
-      if (income_response.status === 200 && expense_response.status === 200) {
-        setClearAllTransactions(false);
-        toast.success("All transactions cleared successfully!");
-      }
+      await axiosInstance.delete(API_PATHS.INCOME.DELETE_ALL_INCOME);
+      await axiosInstance.delete(API_PATHS.EXPENSE.DELETE_ALL_EXPENSE);
+      setClearAllTransactions(false);
+      toast.success("Ledger wiped clean.");
     } catch (error) {
-      console.error("Error clearing all transactions:", error);
-      toast.error("Failed to clear transactions. Please try again.");
+      toast.error("Erasure protocol failed.");
     }
   };
 
   const handleDeleteAccount = async () => {
     try {
-      const response = await axiosInstance.delete(
-        API_PATHS.AUTH.DELETE_ACCOUNT,
-      );
+      const response = await axiosInstance.delete(API_PATHS.AUTH.DELETE_ACCOUNT);
       if (response.status === 200) {
         localStorage.removeItem("token");
         clearUser();
         navigate("/login");
       }
     } catch (error) {
-      console.error("Error deleting account:", error);
-      toast.error("Failed to delete account. Please try again.");
+      toast.error("Termination failed.");
       setDeleteAccount(false);
     }
   };
@@ -155,127 +136,100 @@ const Profile = () => {
 
   return (
     <DashboardLayout activeMenu="Profile">
-      <div className="py-12 max-w-[1600px] mx-auto space-y-20 px-4">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
-          <div className="space-y-3">
-            <h2 className="text-sm font-black uppercase tracking-[0.4em] text-[var(--color-text)]">
+      <div className="py-8 sm:py-12 max-w-[1600px] mx-auto space-y-12 sm:space-y-20 px-4 sm:px-6">
+        
+        {/* Header Protocol */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
+          <div className="space-y-3 relative group">
+            <h2 className="text-xs sm:text-sm font-black uppercase tracking-[0.4em] text-[var(--color-text)]">
               Identity Matrix
             </h2>
-            <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">
+            <p className="text-[9px] sm:text-[10px] font-black text-primary uppercase tracking-[0.3em]">
               Manage your financial signature and security protocols
             </p>
-            <div className="h-px w-32 bg-gradient-to-r from-primary/40 to-transparent pt-0.5" />
+            <div className="h-px w-32 bg-gradient-to-r from-primary/40 to-transparent group-hover:w-48 transition-all duration-700" />
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-3 sm:gap-4 w-full sm:w-auto">
             {!isEditing ? (
               <>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="group relative flex items-center gap-3 bg-primary py-4 px-10 rounded-2xl overflow-hidden transition-all hover:scale-[1.05] active:scale-95 shadow-2xl shadow-[0_12px_32px_color-mix(in_srgb,var(--color-primary),transparent_80%)]"
+                  className="flex-1 sm:flex-none group relative flex items-center justify-center gap-3 bg-primary py-4 px-8 rounded-2xl transition-all hover:scale-[1.05] active:scale-95 shadow-xl shadow-primary/20"
                 >
-                  <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <LuPencil size={18} className="text-[var(--color-primary-contrast)] relative z-10" />
-                  <span className="text-[var(--color-primary-contrast)] font-black uppercase tracking-widest text-[10px] relative z-10">Refine Signature</span>
+                  <LuPencil size={16} className="text-[var(--color-primary-contrast)]" />
+                  <span className="text-[var(--color-primary-contrast)] font-black uppercase tracking-widest text-[10px]">Refine Signature</span>
                 </button>
 
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setClearAllTransactions(true)}
-                    className="group relative px-6 py-4 rounded-2xl bg-white/[0.02] hover:bg-red-500/10 border border-white/5 hover:border-red-500/20 transition-all"
-                    title="Wipe Ledger"
-                  >
-                    <div className="flex items-center gap-3">
-                      <LuTrash2 size={20} className="text-white/30 group-hover:text-red-500 transition-colors" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/30 group-hover:text-red-500 transition-colors">Wipe Data</span>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => setDeleteAccount(true)}
-                    className="group relative px-6 py-4 rounded-2xl bg-white/[0.02] hover:bg-red-500/10 border border-white/5 hover:border-red-500/20 transition-all"
-                    title="Terminate Node"
-                  >
-                    <div className="flex items-center gap-3">
-                      <LuBan size={20} className="text-white/30 group-hover:text-red-500 transition-colors" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/30 group-hover:text-red-500 transition-colors">Delete Account</span>
-                    </div>
-                  </button>
-                </div>
+                <button
+                  onClick={() => setClearAllTransactions(true)}
+                  className="p-4 rounded-2xl bg-white/[0.02] hover:bg-red-500/10 border border-white/5 hover:border-red-500/20 transition-all text-white/30 hover:text-red-500 flex items-center gap-2"
+                >
+                  <LuTrash2 size={18} />
+                  <span className="hidden sm:inline text-[9px] font-black uppercase tracking-widest">Wipe</span>
+                </button>
+                
+                <button
+                  onClick={() => setDeleteAccount(true)}
+                  className="p-4 rounded-2xl bg-white/[0.02] hover:bg-red-500/10 border border-white/5 hover:border-red-500/20 transition-all text-white/30 hover:text-red-500 flex items-center gap-2"
+                >
+                  <LuBan size={18} />
+                  <span className="hidden sm:inline text-[9px] font-black uppercase tracking-widest">Terminate</span>
+                </button>
               </>
             ) : (
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setIsEditing(false)}
-                  className="py-4 px-10 rounded-2xl bg-[var(--color-divider)] text-[var(--color-text-muted)] border border-[var(--color-border)] hover:bg-white/10 transition-all font-black uppercase tracking-widest text-[10px]"
-                >
-                  Discard
-                </button>
-                <button
-                  onClick={handleUpdateProfile}
-                  className="py-4 px-10 rounded-2xl bg-primary text-[var(--color-primary-contrast)] shadow-2xl shadow-primary/20 hover:scale-[1.05] transition-all font-black uppercase tracking-widest text-[10px]"
-                >
-                  Commit Matrix
-                </button>
+              <div className="flex gap-4 w-full sm:w-auto">
+                <button onClick={() => setIsEditing(false)} className="flex-1 px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">Discard</button>
+                <button onClick={handleUpdateProfile} className="flex-1 px-8 py-4 rounded-2xl bg-primary text-[var(--color-primary-contrast)] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.05] transition-all">Commit Matrix</button>
               </div>
             )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
-          {/* Left Column: Avatar & Bio */}
-          <div className="lg:col-span-4 space-y-12">
-            <div className="bg-[var(--color-surface)] p-12 rounded-[56px] border border-[var(--color-border)] shadow-2xl flex flex-col items-center relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-20">
+          
+          {/* Avatar Component */}
+          <div className="lg:col-span-4">
+            <div className="bg-[var(--color-surface)] p-8 sm:p-12 rounded-[40px] sm:rounded-[56px] border border-[var(--color-border)] shadow-2xl flex flex-col items-center relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-              <div className="relative group/avatar mb-10">
-                <div className="absolute -inset-4 bg-gradient-to-br from-primary via-transparent to-secondary rounded-full opacity-10 blur-2xl group-hover/avatar:opacity-30 transition-opacity animate-pulse" />
-
-                <div className="relative z-10 p-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-bg)]">
-                  {previewUrl || profileData.profileImageUrl || userProfile?.profileImageUrl ? (
-                    <img
-                      src={previewUrl || userProfile?.profileImageUrl}
-                      alt="Profile"
-                      className="w-56 h-56 rounded-full object-cover border-4 border-[var(--color-surface)] shadow-2xl"
-                    />
-                  ) : (
-                    <div className="w-56 h-56 rounded-full border-4 border-[var(--color-surface)] bg-[var(--color-surface)] shadow-2xl flex items-center justify-center">
-                      <span className="text-8xl font-black text-[var(--color-text-muted)] opacity-10 italic">
-                        {userProfile?.fullName?.[0] || "S"}
-                      </span>
-                    </div>
-                  )}
+              <div className="relative mb-10 group/avatar">
+                <div className="absolute -inset-6 bg-primary/10 rounded-full blur-3xl opacity-50 group-hover/avatar:opacity-100 transition-opacity animate-pulse" />
+                <div className="relative z-10 p-1 rounded-full border border-white/10 bg-[var(--color-bg)]">
+                  <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full overflow-hidden border-4 border-[var(--color-surface)] shadow-2xl flex items-center justify-center bg-white/[0.02]">
+                    {previewUrl || userProfile?.profileImageUrl ? (
+                      <img src={previewUrl || userProfile?.profileImageUrl} alt="Identity" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-7xl font-black text-white/5 italic select-none">{userProfile?.fullName?.[0] || "A"}</span>
+                    )}
+                  </div>
                 </div>
-
                 {isEditing && (
-                  <label className="absolute bottom-4 right-4 p-5 bg-primary text-[var(--color-primary-contrast)] rounded-3xl cursor-pointer shadow-2xl hover:scale-110 active:scale-95 transition-all z-20 border-4 border-[var(--color-surface)]">
-                    <LuPencil size={24} />
+                  <label className="absolute bottom-2 right-2 p-4 bg-primary text-[var(--color-primary-contrast)] rounded-2xl cursor-pointer shadow-2xl hover:scale-110 active:scale-95 transition-all z-20 border-4 border-[var(--color-surface)]">
+                    <LuCamera size={20} />
                     <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
                   </label>
                 )}
               </div>
 
-              <div className="text-center mb-10">
-                <h3 className="text-3xl font-black tracking-tighter text-[var(--color-text)] truncate w-full mb-2">
-                  {userProfile?.fullName || "Agent Spectre"}
-                </h3>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--color-text-muted)] opacity-40">
-                  Node Active Since {moment(userProfile?.createdAt).format("MMM YYYY")}
-                </p>
+              <div className="text-center w-full space-y-2 mb-10">
+                <h3 className="text-2xl sm:text-3xl font-black tracking-tighter text-[var(--color-text)] truncate">{userProfile?.fullName || "Agent Spectre"}</h3>
+                <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--color-text-muted)] opacity-30">Active Since {moment(userProfile?.createdAt).format("MMM YYYY")}</p>
               </div>
 
               <div className="w-full space-y-4">
-                <label className="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--color-text-muted)] opacity-20 ml-4 italic">Neural Codex (Bio)</label>
-                <div className={`p-8 rounded-[40px] bg-[var(--color-bg)] border border-[var(--color-border)] transition-all relative overflow-hidden ${isEditing ? 'border-primary/30 ring-1 ring-primary/20' : ''}`}>
+                <label className="text-[8px] font-black uppercase tracking-[0.4em] text-primary/40 ml-4">Neural Codex (Bio)</label>
+                <div className={`p-6 sm:p-8 rounded-[32px] sm:rounded-[40px] bg-[var(--color-bg)] border border-[var(--color-border)] transition-all ${isEditing ? 'border-primary/30 bg-primary/[0.02]' : ''}`}>
                   {isEditing ? (
                     <textarea
-                      className="w-full bg-transparent border-none outline-none text-[var(--color-text)] opacity-80 leading-relaxed font-bold resize-none text-[13px] placeholder:text-[var(--color-text-muted)] opacity-20"
+                      className="w-full bg-transparent border-none outline-none text-[var(--color-text)] leading-relaxed font-bold resize-none text-[12px] placeholder:opacity-20"
                       value={profileData.bio}
                       onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
-                      placeholder="Input neural data streams..."
-                      rows={6}
+                      placeholder="Initialize bio stream..."
+                      rows={5}
                     />
                   ) : (
-                    <p className="text-[var(--color-text-muted)] opacity-40 leading-relaxed font-bold text-[13px]">
+                    <p className="text-[var(--color-text-muted)] opacity-60 leading-relaxed font-bold text-[12px]">
                       {profileData.bio || "No neural data detected. High-level financial focus maintained."}
                     </p>
                   )}
@@ -284,75 +238,53 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Right Column: Metadata */}
+          {/* Form Fields Component */}
           <div className="lg:col-span-8">
-            <div className="bg-[var(--color-surface)] p-12 rounded-[56px] border border-[var(--color-border)] shadow-2xl space-y-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                <ProfileField label="Identity Designation" value={profileData.fullName} isEditing={isEditing} onChange={(val) => setProfileData({ ...profileData, fullName: val })} />
+            <div className="bg-[var(--color-surface)] p-8 sm:p-12 rounded-[40px] sm:rounded-[56px] border border-[var(--color-border)] shadow-2xl space-y-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+                
+                <ProfileField label="Identity Designation" value={profileData.fullName} isEditing={isEditing} onChange={(val) => setProfileData({...profileData, fullName: val})} />
                 <ProfileField label="Linked Protocol (Email)" value={userProfile?.email} isEditing={false} />
 
                 <div className="space-y-4">
-                  <label className="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--color-text-muted)] opacity-20 ml-4 italic">Biological Marker (Gender)</label>
-                  <div className={`relative transition-all ${isEditing ? 'scale-[1.02]' : ''}`}>
-                    <select
-                      disabled={!isEditing}
-                      value={profileData.gender}
-                      onChange={(e) => setProfileData({ ...profileData, gender: e.target.value })}
-                      className={`w-full py-5 px-8 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-3xl text-[var(--color-text)] font-black uppercase tracking-widest text-[11px] outline-none appearance-none transition-all ${isEditing ? 'hover:border-primary/40 focus:border-primary focus:ring-4 focus:ring-primary/10 cursor-pointer' : 'cursor-default opacity-40'}`}
-                    >
-                      <option value="">Undeclared</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
+                  <label className="text-[8px] font-black uppercase tracking-[0.4em] text-primary/40 ml-4">Biological Marker</label>
+                  <select
+                    disabled={!isEditing}
+                    value={profileData.gender}
+                    onChange={(e) => setProfileData({ ...profileData, gender: e.target.value })}
+                    className={`w-full py-4 px-6 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl text-[var(--color-text)] font-black uppercase tracking-widest text-[10px] outline-none transition-all ${isEditing ? 'border-primary/40 focus:ring-4 focus:ring-primary/5 cursor-pointer' : 'opacity-40'}`}
+                  >
+                    <option value="">Undeclared</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
 
-                <ProfileField label="Initial Synchronization (DOB)" value={profileData.dob} isEditing={isEditing} type="date" onChange={(val) => setProfileData({ ...profileData, dob: val })} />
-                <ProfileField label="Comm-Link Trace (Phone)" value={profileData.phone} isEditing={isEditing} placeholder="+1 000 000 000" onChange={(val) => setProfileData({ ...profileData, phone: val })} />
-                <ProfileField label="Geographic Sector (Country)" value={profileData.country} isEditing={isEditing} onChange={(val) => setProfileData({ ...profileData, country: val })} />
+                <ProfileField label="Initial Sync (DOB)" value={profileData.dob} isEditing={isEditing} type="date" onChange={(val) => setProfileData({...profileData, dob: val})} />
+                <ProfileField label="Comm-Link Trace" value={profileData.phone} isEditing={isEditing} placeholder="+1 000 000 000" onChange={(val) => setProfileData({...profileData, phone: val})} />
+                <ProfileField label="Geographic Sector" value={profileData.country} isEditing={isEditing} onChange={(val) => setProfileData({...profileData, country: val})} />
 
                 <div className="md:col-span-2">
-                  <ProfileField label="Secure Matrix Locale (Address)" value={profileData.address} isEditing={isEditing} onChange={(val) => setProfileData({ ...profileData, address: val })} />
+                  <ProfileField label="Matrix Locale (Address)" value={profileData.address} isEditing={isEditing} onChange={(val) => setProfileData({...profileData, address: val})} />
                 </div>
 
-                <ProfileField label="City Node" value={profileData.city} isEditing={isEditing} onChange={(val) => setProfileData({ ...profileData, city: val })} />
-                <ProfileField label="State Grid" value={profileData.state} isEditing={isEditing} onChange={(val) => setProfileData({ ...profileData, state: val })} />
-                <ProfileField label="ZIP Encryption Protocol" value={profileData.zip} isEditing={isEditing} onChange={(val) => setProfileData({ ...profileData, zip: val })} />
+                <ProfileField label="City Node" value={profileData.city} isEditing={isEditing} onChange={(val) => setProfileData({...profileData, city: val})} />
+                <ProfileField label="State Grid" value={profileData.state} isEditing={isEditing} onChange={(val) => setProfileData({...profileData, state: val})} />
+                <ProfileField label="ZIP Protocol" value={profileData.zip} isEditing={isEditing} onChange={(val) => setProfileData({...profileData, zip: val})} />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <Modal
-        isOpen={clearAllTransactions}
-        onClose={() => setClearAllTransactions(false)}
-        title="Ledger Erasure"
-      >
-        <div className="p-4 bg-[var(--color-bg)] rounded-3xl border border-[var(--color-border)]">
-          <ConfirmAlert
-            content="Initiating a total wipe of all financial history. This operation is irreversible."
-            onConfirm={handleClearAllTransactions}
-            confirmContent="Execute Wipe"
-            color="error"
-          />
-        </div>
+      {/* Confirmation Modals */}
+      <Modal isOpen={clearAllTransactions} onClose={() => setClearAllTransactions(false)} title="Ledger Erasure">
+        <div className="p-2 sm:p-4"><ConfirmAlert content="Initiating a total wipe of all financial history. This operation is irreversible." onConfirm={handleClearAllTransactions} confirmContent="Execute Wipe" color="error" /></div>
       </Modal>
 
-      <Modal
-        isOpen={deleteAccount}
-        onClose={() => setDeleteAccount(false)}
-        title="Node Termination"
-      >
-        <div className="p-4 bg-[var(--color-bg)] rounded-3xl border border-[var(--color-border)]">
-          <ConfirmAlert
-            content="Prepare for total account de-materialization. All data streams will be permanently severed."
-            onConfirm={handleDeleteAccount}
-            confirmContent="Sever Protocol"
-            color="error"
-          />
-        </div>
+      <Modal isOpen={deleteAccount} onClose={() => setDeleteAccount(false)} title="Node Termination">
+        <div className="p-2 sm:p-4"><ConfirmAlert content="Prepare for total account de-materialization. All data streams will be permanently severed." onConfirm={handleDeleteAccount} confirmContent="Sever Protocol" color="error" /></div>
       </Modal>
     </DashboardLayout>
   );
@@ -360,15 +292,15 @@ const Profile = () => {
 
 const ProfileField = ({ label, value, isEditing, onChange, type = "text", placeholder }) => (
   <div className="space-y-4">
-    <label className="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--color-text-muted)] opacity-20 ml-4 italic">{label}</label>
-    <div className={`transition-all ${isEditing ? 'scale-[1.02]' : ''}`}>
+    <label className="text-[8px] font-black uppercase tracking-[0.4em] text-primary/40 ml-4 italic">{label}</label>
+    <div className={`transition-all duration-300 ${isEditing ? 'scale-[1.02]' : ''}`}>
       <input
         type={type}
         value={value}
         disabled={!isEditing}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full py-5 px-8 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-3xl text-[var(--color-text)] font-black tracking-tight text-sm outline-none transition-all ${isEditing ? 'hover:border-primary/40 focus:border-primary/80 focus:ring-4 focus:ring-primary/10 placeholder:text-[var(--color-text-muted)] opacity-20' : 'cursor-default opacity-40'}`}
+        className={`w-full py-4 px-6 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl text-[var(--color-text)] font-bold text-xs outline-none transition-all ${isEditing ? 'border-primary/40 focus:ring-4 focus:ring-primary/5 placeholder:opacity-20' : 'opacity-40'}`}
       />
     </div>
   </div>

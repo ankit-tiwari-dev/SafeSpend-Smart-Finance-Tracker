@@ -22,21 +22,18 @@ const ExpensePage = () => {
   const [openModal, setOpenModal] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState(null);
 
-  // Get All Expense Transactions
   const fetchExpenseTransactions = async () => {
     if (loading) return;
     setLoading(true);
 
     try {
-      const response = await axiosInstance.get(
-        API_PATHS.EXPENSE.GET_ALL_EXPENSE,
-      );
-
+      const response = await axiosInstance.get(API_PATHS.EXPENSE.GET_ALL_EXPENSE);
       if (response.data) {
         setExpenseData(response.data);
       }
     } catch (error) {
       console.error("Error fetching expense transactions:", error);
+      toast.error("Failed to sync transaction data.");
     } finally {
       setLoading(false);
     }
@@ -46,99 +43,109 @@ const ExpensePage = () => {
     try {
       if (expenseToEdit) {
         await axiosInstance.put(API_PATHS.EXPENSE.UPDATE_EXPENSE(expenseToEdit._id), expense);
-        toast.success("Expense updated successfully!");
+        toast.success("Transaction updated successfully!");
       } else {
         await axiosInstance.post(API_PATHS.EXPENSE.ADD_EXPENSE, expense);
-        toast.success("Expense added successfully!");
+        toast.success("Transaction logged successfully!");
       }
 
       setOpenModal(false);
       fetchExpenseTransactions();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(error.response?.data?.message || "Protocol error: check connectivity");
     }
   };
 
-  // Handle Delete Expense
   const deleteExpense = async (id) => {
     try {
       await axiosInstance.delete(API_PATHS.EXPENSE.DELETE_EXPENSE(id));
-
       setOpenDeleteAlert({ show: false, data: null });
-      toast.success("Expense deleted successfully!");
+      toast.success("Transaction purged successfully!");
       fetchExpenseTransactions();
     } catch (error) {
       console.error("Error deleting expense:", error);
+      toast.error("Failed to purge data point.");
     }
   };
 
-  // Handle download expense details
   const handleDownloadExpenseDetails = async () => {
     try {
-      const response = await axiosInstance.get(
-        API_PATHS.EXPENSE.DOWNLOAD_EXPENSE,
-        {
-          responseType: "blob",
-        },
-      );
+      const response = await axiosInstance.get(API_PATHS.EXPENSE.DOWNLOAD_EXPENSE, {
+        responseType: "blob",
+      });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "expense_details.xlsx");
+      link.setAttribute("download", `SafeSpend_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading expense details:", error);
-      toast.error("Failed to download expense details.");
+      toast.error("Export protocol failed.");
     }
   };
 
   useEffect(() => {
     fetchExpenseTransactions();
-    return () => { };
   }, []);
 
   return (
     <DashboardLayout activeMenu="Expense">
-      <div className="py-12 max-w-[1600px] mx-auto space-y-16 px-4">
-        <div className="space-y-3">
-          <h2 className="text-sm font-black uppercase tracking-[0.4em] text-[var(--color-text)]">
-            Outflow Control
-          </h2>
-          <p className="text-[10px] font-black text-[var(--color-chart-4)] uppercase tracking-[0.3em]">
-            Monitor and mitigate your financial burn rate
-          </p>
-          <div className="h-px w-32 bg-gradient-to-r from-[var(--color-chart-4)]/40 to-transparent pt-0.5" />
+      {/* Container with dynamic padding for various screen sizes */}
+      <div className="py-8 sm:py-12 max-w-[1600px] mx-auto space-y-10 sm:space-y-16 px-4 sm:px-6 lg:px-8">
+        
+        {/* Header Section with Premium Accents */}
+        <div className="relative">
+          <div className="space-y-3 relative z-10">
+            <h2 className="text-xs sm:text-sm font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[var(--color-text)]">
+              Outflow Control
+            </h2>
+            <p className="text-[9px] sm:text-[10px] font-black text-[var(--color-chart-4)] uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-80">
+              Monitor and mitigate your financial burn rate
+            </p>
+            <div className="h-[2px] w-24 sm:w-32 bg-gradient-to-r from-[var(--color-chart-4)] to-transparent" />
+          </div>
+          {/* Subtle background glow */}
+          <div className="absolute -top-10 -left-10 w-40 h-40 bg-[var(--color-chart-4)]/5 blur-[80px] pointer-events-none" />
         </div>
 
-        <div className="grid grid-cols-1 gap-16">
-          <ExpenseOverview
-            transactions={expenseData}
-            onAddExpense={() => {
-              setExpenseToEdit(null);
-              setOpenModal(true);
-            }}
-          />
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 gap-10 sm:gap-16">
+          
+          {/* Expense Overview Section */}
+          <div className="transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
+            <ExpenseOverview
+              transactions={expenseData}
+              onAddExpense={() => {
+                setExpenseToEdit(null);
+                setOpenModal(true);
+              }}
+            />
+          </div>
 
-          <ExpenseList
-            transactions={expenseData}
-            onEdit={(expense) => {
-              setExpenseToEdit(expense);
-              setOpenModal(true);
-            }}
-            onDelete={(id) => {
-              setOpenDeleteAlert({
-                show: true,
-                data: id,
-              });
-            }}
-            onDownload={handleDownloadExpenseDetails}
-          />
+          {/* Detailed Transaction List */}
+          <div className="rounded-[32px] sm:rounded-[40px] border border-white/5 bg-white/[0.01] overflow-hidden">
+             <ExpenseList
+              transactions={expenseData}
+              isLoading={loading}
+              onEdit={(expense) => {
+                setExpenseToEdit(expense);
+                setOpenModal(true);
+              }}
+              onDelete={(id) => {
+                setOpenDeleteAlert({
+                  show: true,
+                  data: id,
+                });
+              }}
+              onDownload={handleDownloadExpenseDetails}
+            />
+          </div>
         </div>
 
+        {/* Modal Interfaces */}
         <AddEditExpenseModal
           isOpen={openModal}
           onClose={() => setOpenModal(false)}
@@ -149,15 +156,13 @@ const ExpensePage = () => {
         <Modal
           isOpen={openDeleteAlert.show}
           onClose={() => setOpenDeleteAlert({ show: false, data: null })}
-          title="Delete Transaction"
+          title="Security Override"
         >
-          <div className="p-4">
+          <div className="p-4 sm:p-6 bg-[#0a0a0a]">
             <ConfirmAlert
-              content="This action is irreversible. Are you sure you want to purge this transaction?"
-              onConfirm={() => {
-                deleteExpense(openDeleteAlert.data);
-              }}
-              confirmContent="Purge Transaction"
+              content="This action will permanently redact this transaction from your history. Proceed with data purge?"
+              onConfirm={() => deleteExpense(openDeleteAlert.data)}
+              confirmContent="Confirm Purge"
               color="error"
             />
           </div>

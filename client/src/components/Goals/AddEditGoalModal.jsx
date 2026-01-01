@@ -11,13 +11,13 @@ const AddEditGoalModal = ({ isOpen, onClose, onSave, goalToEdit }) => {
 
   useEffect(() => {
     if (goalToEdit) {
-      setTitle(goalToEdit.title);
-      setTargetAmount(goalToEdit.targetAmount);
-      setCurrentAmount(goalToEdit.currentAmount);
+      setTitle(goalToEdit.title || "");
+      setTargetAmount(goalToEdit.targetAmount || "");
+      setCurrentAmount(goalToEdit.currentAmount || "");
       setDeadline(
         goalToEdit.deadline
           ? new Date(goalToEdit.deadline).toISOString().split("T")[0]
-          : "",
+          : ""
       );
     } else {
       setTitle("");
@@ -41,7 +41,7 @@ const AddEditGoalModal = ({ isOpen, onClose, onSave, goalToEdit }) => {
 
     onSave({
       _id: goalToEdit?._id,
-      title,
+      title: title.trim(),
       targetAmount: Number(targetAmount),
       currentAmount: Number(currentAmount) || 0,
       deadline: deadline ? new Date(deadline) : null,
@@ -55,7 +55,8 @@ const AddEditGoalModal = ({ isOpen, onClose, onSave, goalToEdit }) => {
       onClose={onClose}
       title={goalToEdit ? "Edit Goal" : "Add Goal"}
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 sm:gap-5">
+        {/* Inputs */}
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -87,18 +88,25 @@ const AddEditGoalModal = ({ isOpen, onClose, onSave, goalToEdit }) => {
           type="date"
         />
 
-        {error && <p className="text-red-500 text-xs pt-2">{error}</p>}
+        {/* Error */}
+        {error && (
+          <p className="text-red-500 text-xs sm:text-sm pt-1">
+            {error}
+          </p>
+        )}
 
-        <div className="flex justify-end gap-2 mt-4">
+        {/* Actions */}
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 mt-6">
           <button
-            className="px-4 py-2 text-sm text-[var(--color-text-muted)] opacity-60 hover:bg-[var(--color-divider)] rounded-lg transition-colors border border-transparent hover:border-[var(--color-border)]"
             onClick={onClose}
+            className="w-full sm:w-auto px-5 py-3 text-xs sm:text-sm font-semibold text-[var(--color-text-muted)] opacity-70 hover:opacity-100 hover:bg-[var(--color-divider)] rounded-xl transition-all border border-transparent hover:border-[var(--color-border)]"
           >
             Cancel
           </button>
+
           <button
-            className="px-4 py-2 text-sm text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
             onClick={handleSave}
+            className="w-full sm:w-auto px-6 py-3 text-xs sm:text-sm font-semibold text-white bg-primary hover:bg-primary/90 rounded-xl transition-all shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
           >
             {goalToEdit ? "Update Goal" : "Add Goal"}
           </button>

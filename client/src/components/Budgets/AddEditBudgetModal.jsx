@@ -3,6 +3,7 @@ import moment from "moment";
 import Modal from "../Modal";
 import Input from "../Inputs/Input";
 import EmojiPickerPopup from "../EmojiPickerPopup";
+import { formatAmount } from "../../utils/helper";
 
 const AddEditBudgetModal = ({ isOpen, onClose, onSave, budgetToEdit }) => {
   const [amount, setAmount] = useState("");
@@ -10,12 +11,14 @@ const AddEditBudgetModal = ({ isOpen, onClose, onSave, budgetToEdit }) => {
   const [month, setMonth] = useState(moment().format("YYYY-MM"));
   const [icon, setIcon] = useState("");
   const [error, setError] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
+  // Populate fields if editing
   useEffect(() => {
     if (budgetToEdit) {
-      setAmount(budgetToEdit.limit);
-      setCategory(budgetToEdit.category);
-      setMonth(budgetToEdit.month);
+      setAmount(budgetToEdit.limit || "");
+      setCategory(budgetToEdit.category || "");
+      setMonth(budgetToEdit.month || moment().format("YYYY-MM"));
       setIcon(budgetToEdit.icon || "");
     } else {
       setAmount("");
@@ -24,6 +27,7 @@ const AddEditBudgetModal = ({ isOpen, onClose, onSave, budgetToEdit }) => {
       setIcon("");
     }
     setError(null);
+    setIsSaving(false);
   }, [budgetToEdit, isOpen]);
 
   const handleSave = () => {
@@ -37,6 +41,9 @@ const AddEditBudgetModal = ({ isOpen, onClose, onSave, budgetToEdit }) => {
       return;
     }
 
+    setIsSaving(true);
+
+    // Save the budget
     onSave({
       _id: budgetToEdit?._id,
       category: category.trim(),
@@ -45,6 +52,8 @@ const AddEditBudgetModal = ({ isOpen, onClose, onSave, budgetToEdit }) => {
       icon,
       month,
     });
+
+    // Close modal after saving
     onClose();
   };
 
@@ -54,12 +63,13 @@ const AddEditBudgetModal = ({ isOpen, onClose, onSave, budgetToEdit }) => {
       onClose={onClose}
       title={budgetToEdit ? "Edit Budget" : "Add Budget"}
     >
-      <div className="flex flex-col gap-4">
-        <EmojiPickerPopup
-          icon={icon}
-          onSelect={(selectedIcon) => setIcon(selectedIcon)}
-        />
+      <div className="flex flex-col gap-4 w-full max-w-md mx-auto">
+        {/* Emoji picker */}
+        <div className="flex justify-center sm:justify-start">
+          <EmojiPickerPopup icon={icon} onSelect={(selectedIcon) => setIcon(selectedIcon)} />
+        </div>
 
+        {/* Category */}
         <Input
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -68,6 +78,7 @@ const AddEditBudgetModal = ({ isOpen, onClose, onSave, budgetToEdit }) => {
           type="text"
         />
 
+        {/* Amount */}
         <Input
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
@@ -76,6 +87,7 @@ const AddEditBudgetModal = ({ isOpen, onClose, onSave, budgetToEdit }) => {
           type="number"
         />
 
+        {/* Month */}
         <Input
           value={month}
           onChange={(e) => setMonth(e.target.value)}
@@ -83,20 +95,31 @@ const AddEditBudgetModal = ({ isOpen, onClose, onSave, budgetToEdit }) => {
           type="month"
         />
 
-        {error && <p className="text-red-500 text-xs pt-2">{error}</p>}
+        {/* Error message */}
+        {error && (
+          <p className="text-red-500 text-xs pt-1 text-center sm:text-left">{error}</p>
+        )}
 
-        <div className="flex justify-end gap-2 mt-4">
+        {/* Buttons */}
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 mt-4">
           <button
-            className="px-4 py-2 text-sm text-[var(--color-text-muted)] opacity-60 hover:bg-[var(--color-divider)] rounded-lg transition-colors border border-transparent hover:border-[var(--color-border)]"
+            className="w-full sm:w-auto px-4 py-2 text-sm text-[var(--color-text-muted)] opacity-70 hover:opacity-100 hover:bg-[var(--color-divider)] rounded-lg transition-colors border border-transparent hover:border-[var(--color-border)]"
             onClick={onClose}
+            disabled={isSaving}
           >
             Cancel
           </button>
+
           <button
-            className="px-4 py-2 text-sm text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+            className="w-full sm:w-auto px-4 py-2 text-sm text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             onClick={handleSave}
+            disabled={isSaving}
           >
-            {budgetToEdit ? "Update Budget" : "Add Budget"}
+            {isSaving
+              ? "Saving..."
+              : budgetToEdit
+              ? `Update Budget`
+              : `Add Budget`}
           </button>
         </div>
       </div>

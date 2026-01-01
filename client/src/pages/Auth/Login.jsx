@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
-import AuthLayout from "../../components/layouts/AuthLayout";
 import { Link, useNavigate } from "react-router-dom";
+import AuthLayout from "../../components/layouts/AuthLayout";
 import Input from "../../components/Inputs/Input";
 import { validateEmail } from "../../utils/helper";
 import axiosInstance from "../../utils/axiosInstance";
@@ -13,49 +13,42 @@ const LoginPage = () => {
   const [error, setError] = useState(null);
 
   const { updateUser } = useContext(UserContext);
-
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    // Basic validation
     if (!validateEmail(email)) {
       setError("Please enter a valid email address!");
       return;
     }
-
     if (!password) {
       setError("Password cannot be empty!");
       return;
     }
-
     setError("");
 
     try {
-      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
-        email,
-        password,
-      });
+      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, { email, password });
       const { token, user } = response.data;
+
       if (token) {
         localStorage.setItem("token", token);
         updateUser(user);
         navigate("/dashboard");
       }
     } catch (err) {
-      if (err.response && err.response.data) {
-        setError(
-          err.response.data.message || "Login failed, please try again.",
-        );
-      } else {
-        setError("An unexpected error occurred, please try again later.");
-      }
+      setError(
+        err.response?.data?.message || "Login failed, please try again."
+      );
     }
   };
 
   return (
     <AuthLayout>
       <div className="w-full max-w-sm">
+        {/* Header */}
         <div className="space-y-2 mb-10">
           <h1 className="text-3xl font-black tracking-tight text-[var(--color-text)]">
             SafeSpend Portal
@@ -65,6 +58,7 @@ const LoginPage = () => {
           </p>
         </div>
 
+        {/* Login Form */}
         <form onSubmit={handleLogin} className="space-y-6">
           <Input
             value={email}
@@ -89,26 +83,29 @@ const LoginPage = () => {
             </div>
           )}
 
-          <div className="pt-4">
-            <button type="submit" className="btn-primary w-full py-4 text-sm tracking-[0.3em]">
-              AUTHORIZE ACCESS
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="btn-primary w-full py-4 text-sm tracking-[0.3em]"
+          >
+            AUTHORIZE ACCESS
+          </button>
 
+          {/* Divider */}
           <div className="relative py-4">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-[var(--color-divider)]"></span>
             </div>
             <div className="relative flex justify-center text-xs uppercase font-black tracking-widest">
-              <span className="bg-[var(--color-bg)] px-4 text-[var(--color-text-muted)] opacity-30">Analytical Peer Login</span>
+              <span className="bg-[var(--color-bg)] px-4 text-[var(--color-text-muted)] opacity-30">
+                Analytical Peer Login
+              </span>
             </div>
           </div>
 
+          {/* Google/SafeSpend ID Login */}
           <button
             type="button"
-            onClick={() => {
-              window.location.href = `${BASE_URL}/api/v1/auth/google`;
-            }}
+            onClick={() => (window.location.href = `${BASE_URL}/api/v1/auth/google`)}
             className="w-full py-4 text-xs font-black uppercase tracking-widest border-2 border-[var(--color-divider)] hover:border-[var(--color-primary)] hover:bg-[var(--color-divider)] rounded-2xl transition-all duration-300 flex items-center justify-center gap-3"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -120,9 +117,13 @@ const LoginPage = () => {
             Continue with SafeSpend ID
           </button>
 
+          {/* Signup Link */}
           <p className="text-xs font-bold text-center text-[var(--color-text-muted)] pt-6">
-            New operative? {" "}
-            <Link className="text-[var(--color-primary)] hover:underline ml-1" to="/signup">
+            New operative?{" "}
+            <Link
+              className="text-[var(--color-primary)] hover:underline ml-1"
+              to="/signup"
+            >
               Establish Credentials
             </Link>
           </p>

@@ -6,9 +6,9 @@ import { Link } from "react-router-dom";
 
 const AuthLayout = ({ children }) => {
   return (
-    <div className="min-h-screen flex bg-[var(--color-bg)] overflow-hidden">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[var(--color-bg)] overflow-hidden">
       {/* Left Surface: Portal Entrance Form */}
-      <div className="flex-1 flex flex-col p-8 md:p-16 lg:p-24 relative z-10">
+      <div className="flex-1 flex flex-col p-6 sm:p-12 md:p-16 lg:p-24 relative z-10">
         {/* Branding Core */}
         <Link to="/" className="flex items-center gap-4 group mb-auto">
           <div className="w-12 h-12 bg-[var(--color-brand-logo)] rounded-2xl flex items-center justify-center shadow-2xl shadow-[var(--color-brand-logo)]/20 group-hover:rotate-[20deg] transition-all duration-500 -mt-1">
@@ -30,29 +30,33 @@ const AuthLayout = ({ children }) => {
         </div>
 
         {/* Legal/Footer Core */}
-        <div className="mt-auto pt-10 flex flex-wrap items-center gap-6 opacity-30">
+        <div className="mt-auto pt-10 flex flex-wrap items-center gap-6 opacity-30 text-[10px]">
           <div className="flex items-center gap-2">
             <LuShieldCheck className="text-primary text-xl" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text)]">SafeSpend Secure</span>
+            <span className="font-black uppercase tracking-widest text-[var(--color-text)]">
+              SafeSpend Secure
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <LuTrophy className="text-primary text-xl" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text)]">Elite Class A</span>
+            <span className="font-black uppercase tracking-widest text-[var(--color-text)]">
+              Elite Class A
+            </span>
           </div>
         </div>
       </div>
 
       {/* Right Surface: Spectre Showcase Gallery */}
-      <div className="hidden lg:flex w-[45vw] bg-[var(--color-surface)] border-l border-[var(--color-border)] relative overflow-hidden items-center justify-center">
+      <div className="hidden lg:flex w-full lg:w-[45vw] bg-[var(--color-surface)] border-l border-[var(--color-border)] relative overflow-hidden items-center justify-center">
         {/* Deep Field Gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
 
         {/* Animated Orbs */}
-        <div className="absolute top-1/4 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-secondary/10 rounded-full blur-[120px] animate-pulse delay-700" />
+        <div className="absolute top-1/4 -right-20 w-72 h-72 sm:w-96 sm:h-96 bg-primary/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 -left-20 w-72 h-72 sm:w-96 sm:h-96 bg-secondary/10 rounded-full blur-[120px] animate-pulse delay-700" />
 
         {/* Staggered Showcase Gallery */}
-        <div className="relative w-full h-full flex items-center justify-center p-20">
+        <div className="relative w-full h-full flex items-center justify-center p-16 sm:p-20">
           {/* Dashboard Frame */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] aspect-video bg-black/20 rounded-[40px] blur-3xl" />
 

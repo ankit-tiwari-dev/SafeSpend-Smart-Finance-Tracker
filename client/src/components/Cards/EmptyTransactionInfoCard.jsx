@@ -1,33 +1,29 @@
 import { RiHistoryFill } from "react-icons/ri";
 
-const EmptyTransactionInfoCard = (prop) => {
-  const { title, description } = prop;
-
+const EmptyTransactionInfoCard = ({
+  title = "No transactions yet",
+  description = "Your recent transactions will appear here.",
+}) => {
   return (
-    <div className="flex items-center justify-center h-full w-full">
-      <div className="flex flex-col items-center text-center max-w-xs">
-        <div className="mb-1">
-          <RiHistoryFill
-            className="text-6xl"
-            style={{ color: "var(--color-text-muted)" }}
-          />
-        </div>
-        <h5
-          style={{
-            fontSize: "18px",
-            fontWeight: "500",
-            color: "var(--color-text)",
-            marginBottom: "8px",
-          }}
-        >
+    <div
+      className="flex items-center justify-center w-full h-full px-4"
+      aria-label="Empty transactions placeholder"
+    >
+      <div className="flex flex-col items-center text-center max-w-sm gap-3 opacity-80">
+        {/* Icon */}
+        <RiHistoryFill
+          className="text-4xl sm:text-5xl mb-1"
+          style={{ color: "var(--color-text-muted)" }}
+          aria-hidden="true"
+        />
+
+        {/* Title */}
+        <h5 className="text-base sm:text-lg font-medium text-[var(--color-text)] truncate">
           {title}
         </h5>
-        <p
-          style={{
-            fontSize: "14px",
-            color: "var(--color-text-muted)",
-          }}
-        >
+
+        {/* Description */}
+        <p className="text-sm sm:text-base text-[var(--color-text-muted)] leading-relaxed">
           {description}
         </p>
       </div>
