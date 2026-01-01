@@ -22,7 +22,12 @@ const app = express();
 // CORS
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "*",
+    origin: [
+      "http://localhost:5173",
+      "https://safespend-pro.vercel.app",
+      "https://safespend-smart-finance-tracker.vercel.app",
+      process.env.CLIENT_URL,
+    ].filter(Boolean),
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
