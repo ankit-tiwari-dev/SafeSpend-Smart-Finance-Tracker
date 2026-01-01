@@ -1,9 +1,13 @@
 import User from "../models/user.model.js";
+import Income from "../models/income.model.js";
 import Expense from "../models/expense.model.js";
+import Budget from "../models/budget.model.js";
+import Goal from "../models/goal.model.js";
 import pkg from "jsonwebtoken";
 import { sendWelcomeEmailViaGmail } from "../utils/googleMailer.js";
 
-const { sign } = pkg
+const { sign } = pkg;
+
 // Generate JWT token
 const generateToken = (id) => {
   return sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
@@ -102,9 +106,11 @@ export async function deleteAccount(req, res) {
   try {
     const userId = req.user.id;
 
-    const [deletedIncomes, deletedExpenses, deletedUser] = await Promise.all([
-      deleteMany({ userId }),
+    const [deletedIncomes, deletedExpenses, deletedBudgets, deletedGoals, deletedUser] = await Promise.all([
+      Income.deleteMany({ userId }),
       Expense.deleteMany({ userId }),
+      Budget.deleteMany({ userId }),
+      Goal.deleteMany({ userId }),
       User.findByIdAndDelete(userId),
     ]);
 
