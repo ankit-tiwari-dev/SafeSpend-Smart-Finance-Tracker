@@ -20,22 +20,18 @@ const AddEditGoalModal = ({ isOpen, onClose, onSave, goalToEdit }) => {
           : ""
       );
     } else {
-      setTitle("");
-      setTargetAmount("");
-      setCurrentAmount("");
-      setDeadline("");
+      setTitle(""); setTargetAmount(""); setCurrentAmount(""); setDeadline("");
     }
     setError(null);
   }, [goalToEdit, isOpen]);
 
   const handleSave = () => {
     if (!title || !targetAmount) {
-      setError("Please fill in title and target amount.");
+      setError("Title and target amount are required.");
       return;
     }
-
     if (isNaN(targetAmount) || Number(targetAmount) <= 0) {
-      setError("Please enter a valid target amount.");
+      setError("Enter a valid target amount.");
       return;
     }
 
@@ -53,62 +49,75 @@ const AddEditGoalModal = ({ isOpen, onClose, onSave, goalToEdit }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={goalToEdit ? "Edit Goal" : "Add Goal"}
+      title={goalToEdit ? "EDIT GOAL" : "ADD GOAL"}
     >
-      <div className="flex flex-col gap-4 sm:gap-5">
-        {/* Inputs */}
-        <Input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          label="Goal Title"
-          placeholder="e.g. New Laptop"
-          type="text"
-        />
+      {/* 1. CONTAINER: Enforced width and px-4 gutter to fix right-side settlement */}
+      <div className="w-full md:w-[380px] px-4 md:px-0 flex flex-col gap-3 mx-auto box-border overflow-hidden">
+        
+        {/* INPUT GRID: grid-cols-1 ensures proper mobile stacking */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3">
+          <div className="md:col-span-2">
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              label="GOAL TITLE"
+              placeholder="e.g. New Laptop"
+              type="text"
+              className="w-full px-3 py-2 text-[11px] leading-tight"
+            />
+          </div>
 
-        <Input
-          value={targetAmount}
-          onChange={(e) => setTargetAmount(e.target.value)}
-          label="Target Amount"
-          placeholder="e.g. 50000"
-          type="number"
-        />
+          <Input
+            value={targetAmount}
+            onChange={(e) => setTargetAmount(e.target.value)}
+            label="TARGET"
+            placeholder="50000"
+            type="number"
+            className="w-full px-3 py-2 text-[11px] leading-tight"
+          />
 
-        <Input
-          value={currentAmount}
-          onChange={(e) => setCurrentAmount(e.target.value)}
-          label="Saved So Far (Optional)"
-          placeholder="e.g. 10000"
-          type="number"
-        />
+          <Input
+            value={currentAmount}
+            onChange={(e) => setCurrentAmount(e.target.value)}
+            label="SAVED"
+            placeholder="10000"
+            type="number"
+            className="w-full px-3 py-2 text-[11px] leading-tight"
+          />
 
-        <Input
-          value={deadline}
-          onChange={(e) => setDeadline(e.target.value)}
-          label="Target Date (Optional)"
-          type="date"
-        />
+          <div className="md:col-span-2">
+            <Input
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              label="TARGET DATE"
+              type="date"
+              className="w-full px-3 py-2 text-[11px] leading-tight"
+            />
+          </div>
+        </div>
 
-        {/* Error */}
+        {/* ERROR: Compacted matching other modals */}
         {error && (
-          <p className="text-red-500 text-xs sm:text-sm pt-1">
+          <p className="text-[9px] text-red-500 font-bold uppercase tracking-tighter">
             {error}
           </p>
         )}
 
-        {/* Actions */}
-        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 mt-6">
+        {/* ACTIONS: Standardized scale and "AUTHORIZE" style */}
+        <div className="flex flex-col-reverse md:flex-row items-center justify-end gap-2 mt-1 pb-1">
           <button
+            type="button"
             onClick={onClose}
-            className="w-full sm:w-auto px-5 py-3 text-xs sm:text-sm font-semibold text-[var(--color-text-muted)] opacity-70 hover:opacity-100 hover:bg-[var(--color-divider)] rounded-xl transition-all border border-transparent hover:border-[var(--color-border)]"
+            className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--color-text-muted)] opacity-50 py-1"
           >
-            Cancel
+            CANCEL
           </button>
-
           <button
+            type="button"
             onClick={handleSave}
-            className="w-full sm:w-auto px-6 py-3 text-xs sm:text-sm font-semibold text-white bg-primary hover:bg-primary/90 rounded-xl transition-all shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full md:w-auto px-6 py-2.5 text-[9px] font-black uppercase tracking-[0.1em] text-white bg-primary rounded-xl shadow-lg active:scale-95 transition-all"
           >
-            {goalToEdit ? "Update Goal" : "Add Goal"}
+            {goalToEdit ? "UPDATE" : "AUTHORIZE"}
           </button>
         </div>
       </div>

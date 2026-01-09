@@ -17,7 +17,10 @@ const AddEditIncomeModal = ({ isOpen, onClose, onSave, incomeToEdit }) => {
       setDate(incomeToEdit.date ? incomeToEdit.date.split("T")[0] : "");
       setIcon(incomeToEdit.icon || "");
     } else {
-      setSource(""); setAmount(""); setDate(""); setIcon("");
+      setSource("");
+      setAmount("");
+      setDate("");
+      setIcon("");
     }
     setError(null);
   }, [incomeToEdit, isOpen]);
@@ -27,78 +30,90 @@ const AddEditIncomeModal = ({ isOpen, onClose, onSave, incomeToEdit }) => {
       setError("Please fill in all required fields.");
       return;
     }
-    onSave({ _id: incomeToEdit?._id, source: source.trim(), amount: Number(amount), date, icon });
+    if (isNaN(amount) || Number(amount) <= 0) {
+      setError("Amount must be greater than zero.");
+      return;
+    }
+    onSave({
+      _id: incomeToEdit?._id,
+      source: source.trim(),
+      amount: Number(amount),
+      date,
+      icon,
+    });
     onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={incomeToEdit ? "EDIT INCOME" : "ADD INCOME"}>
-      <div className="flex flex-col gap-8">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={incomeToEdit ? "EDIT INCOME" : "ADD INCOME"}
+    >
+      {/* 1. WIDTH: Use w-full with a max-width for desktop, and px-4 for mobile safe-zone.
+          2. SPACING: Reduced gaps and added 'box-sizing' safety.
+      */}
+      <div className="w-full md:w-[380px] px-4 md:px-0 flex flex-col gap-3 mx-auto box-border">
         
-        {/* 1. Emoji Picker Section - Cleans up the double "Pick Icon" text */}
-        <div className="flex justify-center">
-          <EmojiPickerPopup 
-            icon={icon} 
-            onSelect={(selectedIcon) => setIcon(selectedIcon)} 
-            // Note: If EmojiPickerPopup has its own internal label, 
-            // we don't need to add another <span> here.
-          />
+        {/* ICON SECTION: Scale down slightly to match sleek mobile UI */}
+        <div className="flex items-center scale-90 origin-left">
+          <EmojiPickerPopup icon={icon} onSelect={setIcon} />
         </div>
 
-        {/* 2. Inputs Section - Vertical Stack (Matches your Add Expense image) */}
-        <div className="flex flex-col gap-6">
-          <Input 
-            value={source} 
-            onChange={(e) => setSource(e.target.value)} 
-            label="INCOME SOURCE" 
-            placeholder="Freelance, Salary, etc." 
-          />
-          <Input 
-            value={amount} 
-            onChange={(e) => setAmount(e.target.value)} 
-            label="AMOUNT" 
-            placeholder="1000" 
-            type="number" 
-          />
-          <Input 
-            value={date} 
-            onChange={(e) => setDate(e.target.value)} 
-            label="DATE" 
-            type="date" 
-          />
+        {/* INPUT GRID: grid-cols-1 ensures inputs stay within mobile bounds */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
+          <div className="flex flex-col">
+            <Input
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              label="INCOME SOURCE"
+              placeholder="Freelance..."
+              className="w-full px-3 py-2 text-[11px] leading-tight" 
+            />
+          </div>
+          <div className="flex flex-col">
+            <Input
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              label="AMOUNT"
+              placeholder="1000"
+              type="number"
+              className="w-full px-3 py-2 text-[11px] leading-tight"
+            />
+          </div>
+          <div className="md:col-span-2 flex flex-col">
+            <Input
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              label="DATE"
+              type="date"
+              className="w-full px-3 py-2 text-[11px] leading-tight"
+            />
+          </div>
         </div>
 
-        {/* 3. Error Handling */}
+        {/* ERROR MESSAGE */}
         {error && (
-          <p className="text-red-500 text-[10px] font-black uppercase tracking-widest text-center">
+          <p className="text-[9px] text-red-500 font-bold uppercase tracking-tighter">
             {error}
           </p>
         )}
 
-        {/* 4. Actions Section - Stacked Layout (Matches Add Expense perfectly) */}
-        <div className="flex flex-col items-center gap-5 mt-2">
-          <button
-            type="button"
-            onClick={handleSave}
-            className="
-              w-full
-              py-4
-              text-[11px] font-black uppercase tracking-[0.2em]
-              bg-[#00E5FF] text-black
-              rounded-[18px]
-              shadow-[0_10px_25px_rgba(0,229,255,0.4)]
-              active:scale-95 transition-all duration-300
-            "
-          >
-            {incomeToEdit ? "UPDATE INCOME" : "ADD INCOME"}
-          </button>
-
+        {/* ACTION BUTTONS: Centered and scaled for mobile */}
+        <div className="flex flex-col-reverse md:flex-row items-center justify-end gap-2 mt-2 pb-1">
           <button
             type="button"
             onClick={onClose}
-            className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-text-muted)] opacity-50 hover:opacity-100 transition-opacity"
+            className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--color-text-muted)] opacity-50 py-1"
           >
             CANCEL
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            className="w-full md:w-auto px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.1em] bg-[#00E5FF] text-black rounded-xl shadow-lg active:scale-95 transition-all"
+          >
+            {incomeToEdit ? "UPDATE" : "AUTHORIZE"}
           </button>
         </div>
       </div>
