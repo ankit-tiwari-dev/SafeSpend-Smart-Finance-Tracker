@@ -50,13 +50,13 @@ const fmt = (d) => moment(d).format("DD MMM");
 
 export const prepareExpanseBarChartData = (data = []) => {
   const grouped = {};
-  let maxDate = new Date();
+  
+  if (data.length === 0) return [];
+
+  let maxDate = new Date(Math.max(...data.map(d => new Date(d.date))));
 
   data.forEach(({ date, amount }) => {
     const d = new Date(date);
-    if (d > maxDate) maxDate = new Date(d);
-
-    // Use local date string YYYY-MM-DD for grouping
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     grouped[key] = (grouped[key] || 0) + amount;
   });
@@ -65,7 +65,12 @@ export const prepareExpanseBarChartData = (data = []) => {
     const d = new Date(maxDate);
     d.setDate(d.getDate() - (29 - i));
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    return { date: fmt(d), amount: grouped[key] || 0, formattedAmount: formatAmount(grouped[key] || 0) };
+    
+    return { 
+      date: fmt(d), 
+      amount: grouped[key] || 0, 
+      formattedAmount: formatAmount(grouped[key] || 0) 
+    };
   });  
 };
 
@@ -77,7 +82,6 @@ export const prepareIncomeBarChartData = (data = []) => {
     const d = new Date(date);
     if (d > maxDate) maxDate = new Date(d);
 
-    // Use local date string YYYY-MM-DD for grouping
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     grouped[key] = (grouped[key] || 0) + amount;
   });

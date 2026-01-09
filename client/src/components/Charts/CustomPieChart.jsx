@@ -6,8 +6,7 @@ const CustomPieChart = ({ data = [], colors = [], totalAmount = "₹0", label = 
   const [activeIndex, setActiveIndex] = useState(null);
   const hasData = data && data.length > 0;
 
-  const getDisplayValue = (index) => {
-    // Proper bounds checking
+  const getDisplayValue = (index) => { 
     if (index === null || !data[index]) return "0";
     const item = data[index];
     const value = item.raw !== undefined ? item.raw : item.amount;
@@ -49,7 +48,6 @@ const CustomPieChart = ({ data = [], colors = [], totalAmount = "₹0", label = 
 
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none px-6">
         <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.4em] text-primary/60 mb-1 truncate w-full">
-          {/* ✅ FIXED: Added bounds checking to prevent TypeError */}
           {activeIndex !== null && data[activeIndex] ? data[activeIndex].name : label}
         </span>
         <h2 className="text-[var(--color-text)] font-black italic tracking-tighter leading-none"

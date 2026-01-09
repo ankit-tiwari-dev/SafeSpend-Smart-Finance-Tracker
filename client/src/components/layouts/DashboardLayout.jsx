@@ -6,20 +6,22 @@ import Footer from "./Footer";
 
 const DashboardLayout = ({ children, activeMenu }) => {
   const { user } = useContext(UserContext);
-  // Initialize to false to ensure a consistent initial render
+  // Initialize to false for SSR compatibility, will be set in useEffect
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   useEffect(() => {
-    // Check size on mount
     const checkSize = () => {
       const isDesktop = window.innerWidth >= 1024;
       setIsLargeScreen(isDesktop);
+      // Auto-open on desktop, auto-close on mobile
       if (isDesktop) setIsSideMenuOpen(true);
       else setIsSideMenuOpen(false);
     };
 
+    // Call immediately on mount to ensure state is synced
     checkSize();
+    
     window.addEventListener("resize", checkSize);
     return () => window.removeEventListener("resize", checkSize);
   }, []);
@@ -27,28 +29,28 @@ const DashboardLayout = ({ children, activeMenu }) => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row overflow-x-hidden bg-[var(--color-bg)]">
-      {/* Sidebar */}
+    <div className="min-h-screen flex bg-[var(--color-bg)] overflow-x-hidden">
+      {/* Sidebar Container */}
       <div
         className={`fixed inset-y-0 left-0 z-[60] transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] 
           ${isSideMenuOpen ? "translate-x-0 w-80" : "-translate-x-full w-80"}
-          lg:translate-x-0 lg:block bg-[var(--color-sidebar)] border-r border-[var(--color-border)] shadow-2xl`}
+          bg-[var(--color-sidebar)] border-r border-[var(--color-border)] shadow-2xl`}
       >
         <SideMenu activeMenu={activeMenu} closeSideMenu={() => setIsSideMenuOpen(false)} />
       </div>
 
-      {/* Mobile Overlay - Now uses isLargeScreen state instead of window.innerWidth */}
+      {/* Mobile Overlay */}
       {isSideMenuOpen && !isLargeScreen && (
         <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[55] animate-in fade-in duration-300"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[55]"
           onClick={() => setIsSideMenuOpen(false)}
         />
       )}
 
-      {/* Main Content */}
+      {/* Main Content Area */}
       <div
         className={`flex-1 flex flex-col min-w-0 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
-          ${isSideMenuOpen ? "lg:pl-80" : "lg:pl-0"}`}
+          ${isSideMenuOpen && isLargeScreen ? "lg:pl-80" : "lg:pl-0"}`}
       >
         <Navbar
           activeMenu={activeMenu}

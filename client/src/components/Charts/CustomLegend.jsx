@@ -1,5 +1,4 @@
 const CustomLegend = ({ payload = [], isLoading = false }) => {
-  // ✅ Loading / skeleton state
   if (isLoading) {
     return (
       <div className="flex flex-wrap justify-center gap-4 mt-4 mb-4">
@@ -13,7 +12,6 @@ const CustomLegend = ({ payload = [], isLoading = false }) => {
     );
   }
 
-  // ✅ Empty state
   if (!payload.length) {
     return (
       <div className="flex justify-center mt-4 mb-4 text-[10px] text-[var(--color-text-muted)] opacity-40">

@@ -5,7 +5,6 @@ const CustomTooltip = ({
   data = [],
   isLoading = false,
 }) => {
-  // ✅ Loading State
   if (isLoading) {
     return (
       <div className="bg-[var(--color-surface)] p-4 rounded-2xl border border-[var(--color-border)] shadow-xl animate-pulse w-48">
@@ -15,7 +14,6 @@ const CustomTooltip = ({
     );
   }
 
-  // ✅ Safety checks (prevents crash)
   if (!active || !payload.length || !data.length) return null;
 
   const name = payload[0]?.name ?? "Unknown";
@@ -26,7 +24,6 @@ const CustomTooltip = ({
 
   return (
     <div className="bg-[var(--color-surface)] backdrop-blur-xl p-3 sm:p-4 rounded-2xl border border-[var(--color-border)] shadow-3xl max-w-[220px]">
-      {/* Header */}
       <div className="flex items-center gap-2 sm:gap-3 mb-2 border-b border-[var(--color-divider)] pb-2">
         <div
           className="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor] flex-shrink-0"
@@ -36,8 +33,7 @@ const CustomTooltip = ({
           {name}
         </p>
       </div>
-
-      {/* Value */}
+      
       <div className="flex items-baseline gap-2">
         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-text-muted)] opacity-30">
           Value

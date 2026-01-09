@@ -1,90 +1,58 @@
 import { useState } from "react";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
-const Input = ({
-  value,
-  onChange,
-  label,
-  placeholder,
-  type = "text",
-  allowInput = true,
-}) => {
+const Input = (props) => {
+  const {
+    value,
+    onChange,
+    label,
+    placeholder,
+    type,
+    allowInput = true,
+  } = props;
   const [showPassword, setShowPassword] = useState(false);
 
-  const isPassword = type === "password";
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
-    <div className="w-full">
-      {/* Label */}
-      {label && (
-        <label
-          className="
-            block
-            text-[9px] sm:text-[10px]
-            font-black
-            uppercase
-            tracking-[0.25em]
-            text-[var(--color-text)]
-            opacity-40
-            mb-2 sm:mb-3
-            ml-1
-          "
-        >
-          {label}
-        </label>
-      )}
+    <div>
+      <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-text)] opacity-40 mb-3 ml-1">
+        {label}
+      </label>
 
-      {/* Input wrapper */}
-      <div
-        className="
-          flex items-center gap-3
-          px-4 py-3 sm:py-3.5
-          rounded-2xl
-          bg-[var(--color-divider)]
-          border border-[var(--color-border)]
-          transition-all
-          focus-within:border-primary/40
-          focus-within:ring-1
-          focus-within:ring-primary/30
-        "
-      >
+      <div className="input-box">
         <input
-          type={isPassword ? (showPassword ? "text" : "password") : type}
+          type={
+            type === "password" ? (showPassword ? "text" : "password") : type
+          }
           placeholder={placeholder}
+          className="w-full bg-transparent outline-none placeholder-gray-400 dark:placeholder-gray-500 focus:ring-primary"
+          style={{
+            color: "var(--color-text)",
+          }}
           value={value}
-          onChange={onChange}
+          onChange={(e) => onChange(e)}
           disabled={!allowInput}
-          className="
-            w-full
-            bg-transparent
-            outline-none
-            text-sm sm:text-base
-            text-[var(--color-text)]
-            placeholder:text-gray-400 dark:placeholder:text-gray-500
-            disabled:opacity-40
-          "
-          aria-label={label || placeholder}
         />
 
-        {/* Password toggle */}
-        {isPassword && (
-          <button
-            type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
-            className="
-              text-[var(--color-text-muted)]
-              hover:text-primary
-              transition-colors
-              flex items-center
-            "
-          >
+        {type === "password" && (
+          <div className="flex items-center">
             {showPassword ? (
-              <FaRegEye size={18} />
+              <FaRegEye
+                size={22}
+                className="text-primary cursor-pointer"
+                onClick={() => togglePasswordVisibility()}
+              />
             ) : (
-              <FaRegEyeSlash size={18} />
+              <FaRegEyeSlash
+                size={22}
+                className="text-gray-400 dark:text-gray-500 cursor-pointer"
+                onClick={() => togglePasswordVisibility()}
+              />
             )}
-          </button>
+          </div>
         )}
       </div>
     </div>

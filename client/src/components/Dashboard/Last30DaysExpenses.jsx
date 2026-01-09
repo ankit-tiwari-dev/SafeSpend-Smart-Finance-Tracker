@@ -26,7 +26,7 @@ const Last30DaysExpenses = ({ data = [] }) => {
       </div>
 
       {/* Chart container */}
-      <div className="flex-1 w-full min-h-[220px] sm:min-h-[280px]">
+      <div className="w-full h-[250px] sm:h-[300px] mt-auto">
         <CustomBarChart data={chartData} />
       </div>
     </section>
