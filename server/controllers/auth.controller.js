@@ -3,14 +3,13 @@ import Income from "../models/income.model.js";
 import Expense from "../models/expense.model.js";
 import Budget from "../models/budget.model.js";
 import Goal from "../models/goal.model.js";
-import pkg from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { sendWelcomeEmailViaGmail } from "../utils/googleMailer.js";
 
-const { sign } = pkg;
 
 // Generate JWT token
 const generateToken = (id) => {
-  return sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
 // Register User
