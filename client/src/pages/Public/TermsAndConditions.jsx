@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { LuArrowLeft, LuFileText, LuCheckCircle, LuAlertTriangle, LuHandshake } from "react-icons/lu";
+import { LuArrowLeft, LuFileText, LuCircleCheck, LuTriangleAlert, LuHandshake } from "react-icons/lu";
 
 const TermsAndConditions = () => {
     return (
@@ -48,7 +48,7 @@ const TermsAndConditions = () => {
 
                     <section className="space-y-4">
                         <div className="flex items-center gap-3 text-primary">
-                            <LuCheckCircle className="text-2xl" />
+                            <LuCircleCheck className="text-2xl" />
                             <h2 className="text-2xl font-bold text-white">Permitted Use</h2>
                         </div>
                         <p className="text-gray-400 leading-relaxed">
@@ -63,7 +63,7 @@ const TermsAndConditions = () => {
 
                     <section className="space-y-4">
                         <div className="flex items-center gap-3 text-primary">
-                            <LuAlertTriangle className="text-2xl" />
+                            <LuTriangleAlert className="text-2xl" />
                             <h2 className="text-2xl font-bold text-white">Limitation of Liability</h2>
                         </div>
                         <p className="text-gray-400 leading-relaxed">
