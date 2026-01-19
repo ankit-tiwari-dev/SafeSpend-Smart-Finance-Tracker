@@ -49,8 +49,6 @@ if (
             // Link Google account if not linked
             user.googleId = profile.id;
             user.authProvider = "google";
-            user.gmailAccessToken = accessToken;
-            if (refreshToken) user.gmailRefreshToken = refreshToken;
             await user.save();
           } else {
             // Create new user
@@ -60,18 +58,12 @@ if (
               email,
               googleId: profile.id,
               authProvider: "google",
-              gmailAccessToken: accessToken,
-              gmailRefreshToken: refreshToken || null,
             });
           }
 
           // Send welcome email only on first creation
           if (isNew) {
-            try {
-              await sendWelcomeEmail({ accessToken, refreshToken }, user);
-            } catch (emailErr) {
-              console.error("Error sending welcome email:", emailErr);
-            }
+            console.log(`New user created via Google: ${user.email}. Transactional email should be sent via service account/SMTP.`);
           }
 
           return done(null, user);

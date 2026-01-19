@@ -63,7 +63,7 @@ router.delete("/deleteAccount", protect, deleteAccount);
 router.get(
   "/google",
   passport.authenticate("google", {
-    scope: ["profile", "email", "https://www.googleapis.com/auth/gmail.send"],
+    scope: ["profile", "email"],
     accessType: "offline",
     prompt: "consent",
   })
