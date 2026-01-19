@@ -15,6 +15,7 @@ import {
 import HERO_BG from "../assets/images/safespend_hero_bg.png";
 import FINANCE_IMG from "../assets/images/finance_management_card_img.png";
 import INSIGHTS_IMG from "../assets/images/insights_card_img.png";
+import APP_LOGO from "../assets/images/safespend_logo.png";
 
 // Enhanced data for a more professional look
 const testimonials = [
@@ -52,8 +53,8 @@ const LandingPage = () => {
                     <div className="flex items-center justify-between">
                         {/* Logo */}
                         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
-                            <div className="w-10 h-10 bg-[var(--color-brand-logo)] rounded-xl flex items-center justify-center shadow-lg shadow-[var(--color-brand-logo)]/20 group-hover:scale-105 transition-transform">
-                                <LuChartPie className="text-[var(--color-brand-logo-contrast)] text-2xl" />
+                            <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center shadow-lg shadow-white/5 group-hover:scale-105 transition-transform">
+                                <img src={APP_LOGO} alt="SafeSpend Logo" className="w-full h-full object-cover" />
                             </div>
                             <span className="text-xl sm:text-2xl font-bold tracking-tight">SafeSpend</span>
                         </div>
@@ -293,8 +294,8 @@ const LandingPage = () => {
                 <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 lg:gap-20">
                     <div className="col-span-1 sm:col-span-2 md:col-span-1 space-y-6">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-[var(--color-brand-logo)] rounded-lg flex items-center justify-center">
-                                <LuChartPie className="text-[var(--color-brand-logo-contrast)] text-xl" />
+                            <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
+                                <img src={APP_LOGO} alt="SafeSpend Logo" className="w-full h-full object-cover" />
                             </div>
                             <span className="text-xl font-bold tracking-tight uppercase">SafeSpend</span>
                         </div>

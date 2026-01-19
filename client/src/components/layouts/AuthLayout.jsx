@@ -1,7 +1,8 @@
 import SHOWCASE_DASHBOARD from "../../assets/images/showcase-dashboard.png";
 import SHOWCASE_INSIGHTS from "../../assets/images/showcase-insights.png";
 import SHOWCASE_BUDGET from "../../assets/images/showcase-budget.png";
-import { LuChartPie, LuShieldCheck, LuTrophy } from "react-icons/lu";
+import { LuShieldCheck, LuTrophy } from "react-icons/lu";
+import APP_LOGO from "../../assets/images/safespend_logo.png";
 import { Link } from "react-router-dom";
 
 const AuthLayout = ({ children }) => {
@@ -11,8 +12,8 @@ const AuthLayout = ({ children }) => {
       <div className="flex-1 flex flex-col p-6 sm:p-12 md:p-16 lg:p-24 relative z-10">
         {/* Branding Core */}
         <Link to="/" className="flex items-center gap-4 group mb-auto">
-          <div className="w-12 h-12 bg-[var(--color-brand-logo)] rounded-2xl flex items-center justify-center shadow-2xl shadow-[var(--color-brand-logo)]/20 group-hover:rotate-[20deg] transition-all duration-500 -mt-1">
-            <LuChartPie className="text-[var(--color-brand-logo-contrast)] text-2xl" />
+          <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl shadow-white/5 group-hover:rotate-[20deg] transition-all duration-500 -mt-1">
+            <img src={APP_LOGO} alt="SafeSpend Logo" className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col">
             <h2 className="text-xl font-black tracking-tight text-[var(--color-text)] leading-none">

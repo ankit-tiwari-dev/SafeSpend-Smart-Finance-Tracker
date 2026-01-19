@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { HiOutlineMenuAlt2, HiOutlineX } from "react-icons/hi";
 import { LuChartPie } from "react-icons/lu";
 import ThemeToggle from "../ThemeToggle";
+import APP_LOGO from "../../assets/images/safespend_logo.png";
 
 const Navbar = ({ activeMenu, toggleSideMenu, isSideMenuOpen }) => {
   return (
@@ -10,7 +11,7 @@ const Navbar = ({ activeMenu, toggleSideMenu, isSideMenuOpen }) => {
       style={{ backgroundColor: "rgba(var(--color-bg-rgb), 0.85)" }}
     >
       <div className="max-w-[1920px] mx-auto flex items-center justify-between px-4 md:px-10 py-3 md:py-4">
-        
+
         {/* Left Section: Menu Toggle + Logo */}
         <div className="flex items-center gap-3 sm:gap-6 min-w-0">
           {/* Menu Toggle Button */}
@@ -27,14 +28,14 @@ const Navbar = ({ activeMenu, toggleSideMenu, isSideMenuOpen }) => {
           </button>
 
           {/* Logo & Text - Ensured visibility with min-w-0 to prevent clipping */}
-          <Link 
-            to="/dashboard" 
+          <Link
+            to="/dashboard"
             className="flex items-center gap-3 group min-w-0"
           >
-            <div className="flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 bg-[var(--color-brand-logo)] rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-[10deg] transition-all duration-500">
-              <LuChartPie className="text-[var(--color-brand-logo-contrast)] text-lg sm:text-xl" />
+            <div className="flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl overflow-hidden flex items-center justify-center shadow-lg group-hover:rotate-[10deg] transition-all duration-500">
+              <img src={APP_LOGO} alt="SafeSpend Logo" className="w-full h-full object-cover" />
             </div>
-            
+
             {/* SafeSpend Text: Always visible, just sizes down on mobile */}
             <div className="flex flex-col truncate">
               <h1 className="text-sm sm:text-base lg:text-lg font-black tracking-tight text-[var(--color-text)] leading-none">
@@ -61,7 +62,7 @@ const Navbar = ({ activeMenu, toggleSideMenu, isSideMenuOpen }) => {
           </div>
 
           <div className="h-6 w-[1px] bg-[var(--color-border)] mx-1 hidden sm:block" />
-          
+
           <div className="flex-shrink-0">
             <ThemeToggle />
           </div>
