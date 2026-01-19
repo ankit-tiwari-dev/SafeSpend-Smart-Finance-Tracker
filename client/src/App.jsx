@@ -12,6 +12,8 @@ import Income from "./pages/Dashboard/Income";
 import Expense from "./pages/Dashboard/Expense";
 import Profile from "./pages/Dashboard/Profile";
 import LandingPage from "./pages/LandingPage";
+import PrivacyPolicy from "./pages/Public/PrivacyPolicy";
+import TermsAndConditions from "./pages/Public/TermsAndConditions";
 
 import UserProvider from "./context/UserContext";
 import { Toaster } from "react-hot-toast";
@@ -69,6 +71,8 @@ function App() {
             <Route path="/insights" element={<Insights />} />
             <Route path="/goals" element={<Goals />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
           </Routes>
         </Router>
       </div>

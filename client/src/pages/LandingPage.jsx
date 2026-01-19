@@ -31,12 +31,12 @@ const LandingPage = () => {
     const isAuthenticated = !!localStorage.getItem("token");
 
     const handleGetStarted = () => navigate(isAuthenticated ? "/dashboard" : "/signup");
-    
+
     const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
     const NavLink = ({ href, children, mobile = false }) => (
-        <a 
-            href={href} 
+        <a
+            href={href}
             onClick={() => mobile && setIsMobileMenuOpen(false)}
             className={`font-medium text-gray-400 hover:text-white transition-colors ${mobile ? 'block py-3 text-lg' : 'text-sm'}`}
         >
@@ -79,7 +79,7 @@ const LandingPage = () => {
                         </div>
 
                         {/* Mobile Toggle */}
-                        <button 
+                        <button
                             className="md:hidden text-2xl text-gray-300 hover:text-white p-2"
                             onClick={toggleMenu}
                         >
@@ -96,8 +96,8 @@ const LandingPage = () => {
                             <NavLink href="#feedback" mobile>Feedback</NavLink>
                             <NavLink href="#contact" mobile>Contact</NavLink>
                             <div className="h-px bg-white/10 my-4" />
-                            <Link 
-                                to="/login" 
+                            <Link
+                                to="/login"
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className="block py-3 text-lg font-medium text-gray-400 hover:text-white"
                             >
@@ -120,7 +120,7 @@ const LandingPage = () => {
             {/* Hero Section */}
             <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-4 sm:px-8 overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] sm:w-[600px] lg:w-[800px] h-[500px] bg-primary/15 blur-[100px] lg:blur-[130px] rounded-full -z-10" />
-                
+
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                     <div className="space-y-6 lg:space-y-8 text-center lg:text-left z-10">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-primary text-xs font-bold uppercase tracking-wider mx-auto lg:mx-0 backdrop-blur-md">
@@ -128,7 +128,7 @@ const LandingPage = () => {
                         </div>
 
                         <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
-                            Smart Finance for <br className="hidden lg:block"/>
+                            Smart Finance for <br className="hidden lg:block" />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-purple-400">Modern Living.</span>
                         </h1>
 
@@ -162,7 +162,7 @@ const LandingPage = () => {
             {/* Features Grid */}
             <section id="features" className="py-24 px-4 sm:px-8 bg-[#0a0a0a] relative">
                 <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                
+
                 <div className="max-w-7xl mx-auto text-center space-y-4 mb-20">
                     <h2 className="text-3xl sm:text-5xl font-bold tracking-tight">Powerful tools to <span className="text-primary">grow your wealth.</span></h2>
                     <p className="text-gray-400 max-w-2xl mx-auto text-lg">Everything you need to manage your money efficiently in a single platform.</p>
@@ -174,12 +174,12 @@ const LandingPage = () => {
                         desc: "Get a bird's eye view of your entire financial landscape in real-time.",
                         icon: <LuLayoutDashboard />,
                         img: FINANCE_IMG
-                    },{
+                    }, {
                         title: "Smart Insights",
                         desc: "AI-driven analytics that help you identify saving opportunities.",
                         icon: <LuChartLine />,
                         img: INSIGHTS_IMG
-                    },{
+                    }, {
                         title: "Financial Goals",
                         desc: "Set, track, and achieve your saving goals with ease.",
                         icon: <LuGoal />,
@@ -189,7 +189,7 @@ const LandingPage = () => {
                             {/* Gradient Border Effect on Hover */}
                             <div className="absolute inset-0 rounded-[32px] bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                             <div className="absolute -inset-[1px] rounded-[33px] bg-gradient-to-b from-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
-                            
+
                             <div className="relative h-full p-8 rounded-[30px] bg-[#050505] border border-white/5 group-hover:border-transparent transition-all overflow-hidden flex flex-col group-hover:-translate-y-2 group-hover:shadow-2xl group-hover:shadow-primary/10">
                                 <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-primary text-2xl mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-lg">
                                     {feature.icon}
@@ -217,7 +217,7 @@ const LandingPage = () => {
                 {/* Fade Masks for Infinite Scroll */}
                 <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-32 z-10 bg-gradient-to-r from-[#050505] to-transparent pointer-events-none" />
                 <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-32 z-10 bg-gradient-to-l from-[#050505] to-transparent pointer-events-none" />
-                
+
                 <div className="w-full overflow-hidden flex py-4">
                     <div className="flex animate-slide whitespace-nowrap gap-6 sm:gap-8 px-4">
                         {/* Duplicate Data for seamless loop */}
@@ -272,10 +272,10 @@ const LandingPage = () => {
             <section className="py-32 px-4 sm:px-8 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent -z-10" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 blur-[120px] rounded-full -z-10" />
-                
+
                 <div className="max-w-4xl mx-auto text-center space-y-10">
                     <h2 className="text-4xl lg:text-7xl font-bold tracking-tight text-white">
-                        Ready to master <br/>
+                        Ready to master <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-400 to-gray-600">your money?</span>
                     </h2>
                     <p className="text-xl text-gray-400 max-w-2xl mx-auto font-light">Join thousands of people who have already changed their financial lives with SafeSpend.</p>
@@ -317,7 +317,7 @@ const LandingPage = () => {
                         <ul className="space-y-4 text-sm text-gray-500">
                             <li><a href="#" className="hover:text-primary transition-colors">About</a></li>
                             <li><a href="#" className="hover:text-primary transition-colors">Careers</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
+                            <li><Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
                         </ul>
                     </div>
 
@@ -333,8 +333,8 @@ const LandingPage = () => {
                 <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-xs text-gray-600 gap-4">
                     <span>&copy; {new Date().getFullYear()} SafeSpend Technologies Inc. All rights reserved.</span>
                     <div className="flex gap-6">
-                        <a href="#" className="hover:text-gray-400 transition-colors">Terms</a>
-                        <a href="#" className="hover:text-gray-400 transition-colors">Privacy</a>
+                        <Link to="/terms-and-conditions" className="hover:text-gray-400 transition-colors">Terms & Conditions</Link>
+                        <Link to="/privacy-policy" className="hover:text-gray-400 transition-colors">Privacy</Link>
                         <a href="#" className="hover:text-gray-400 transition-colors">Cookies</a>
                     </div>
                 </div>
