@@ -114,8 +114,8 @@ async function sendWelcomeEmailViaGmail(user) {
     }
 
     // Create OAuth2 client using service account
-    const { JWT } = require("google-auth-library");
-    const jwtClient = new JWT({
+    const { google: googleAuth } = await import("google-auth-library");
+    const jwtClient = new googleAuth.auth.JWT({
       email: keyData.client_email,
       key: keyData.private_key,
       scopes: ["https://www.googleapis.com/auth/gmail.send"],

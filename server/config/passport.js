@@ -38,6 +38,7 @@ if (
             (profile.name &&
               `${profile.name.givenName} ${profile.name.familyName}`) ||
             "User";
+          const profileImageUrl = profile.photos && profile.photos[0] && profile.photos[0].value;
 
           if (!email)
             return done(new Error("No email found in Google profile"));
@@ -49,6 +50,7 @@ if (
             // Link Google account if not linked
             user.googleId = profile.id;
             user.authProvider = "google";
+            if (profileImageUrl) user.profileImageUrl = profileImageUrl;
             await user.save();
           } else {
             // Create new user
@@ -58,12 +60,18 @@ if (
               email,
               googleId: profile.id,
               authProvider: "google",
+              profileImageUrl: profileImageUrl || null,
             });
           }
 
           // Send welcome email only on first creation
           if (isNew) {
-            console.log(`New user created via Google: ${user.email}. Transactional email should be sent via service account/SMTP.`);
+            try {
+              // Note: This requires GMAIL_SERVICE_ACCOUNT_EMAIL or SMTP config on Render
+              await sendWelcomeEmailViaGmail(user);
+            } catch (emailErr) {
+              console.error("Error triggering welcome email flow:", emailErr);
+            }
           }
 
           return done(null, user);
