@@ -23,128 +23,40 @@ function makeBody({ to, from, subject, message, isHtml = false }) {
     .replace(/=+$/, "");
 }
 
-async function sendWelcomeEmail(tokens, user) {
-  if (!tokens || !tokens.accessToken) {
-    throw new Error("Missing access token for Gmail API");
-  }
-
-  const oAuth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET
-  );
-
-  // Attach tokens (including refresh token if present)
-  oAuth2Client.setCredentials({
-    access_token: tokens.accessToken,
-    refresh_token: tokens.refreshToken || user.gmailRefreshToken || undefined,
-  });
-
-  const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
-
-  const subject = "Welcome to SafeSpend – Portal Access Granted";
-  const dashboardUrl = process.env.CLIENT_URL
-    ? `${process.env.CLIENT_URL}/dashboard`
-    : "https://safespend.app/dashboard";
-  const htmlMessage = getWelcomeEmailTemplate(
-    user.fullName,
-    "google",
-    dashboardUrl
-  );
-
-  const raw = makeBody({
-    to: user.email,
-    from: user.email,
-    subject,
-    message: htmlMessage,
-    isHtml: true,
-  });
-
-  // Send the message
-  const res = await gmail.users.messages.send({
-    userId: "me",
-    requestBody: {
-      raw,
-    },
-  });
-
-  return res.data;
-}
-
-// Send welcome email for users without Gmail tokens (normal registration)
-// Uses a configured admin/service Gmail account to send emails
-async function sendWelcomeEmailViaGmail(user) {
+/**
+ * Sends an email using the Gmail REST API with a system-wide Refresh Token.
+ * Required Environment Variables:
+ * - GOOGLE_CLIENT_ID
+ * - GOOGLE_CLIENT_SECRET
+ * - GMAIL_REFRESH_TOKEN (The permanent refresh token for the sender account)
+ * - EMAIL_USER (The email address of the sender)
+ */
+async function sendEmailViaGmailAPI({ to, subject, htmlMessage }) {
   try {
-    // If user has Gmail tokens (e.g., Google Sign-In), use their account
-    if (user.gmailAccessToken) {
-      return await sendWelcomeEmail(
-        {
-          accessToken: user.gmailAccessToken,
-          refreshToken: user.gmailRefreshToken,
-        },
-        user
-      );
+    if (!process.env.GMAIL_REFRESH_TOKEN) {
+      console.warn("GMAIL_REFRESH_TOKEN not found in environment variables. Email sending skipped.");
+      return { success: false, error: "Missing GMAIL_REFRESH_TOKEN" };
     }
 
-    // For normal email/password registration, use admin/service account
-    // This requires GMAIL_SERVICE_ACCOUNT_EMAIL and GMAIL_SERVICE_ACCOUNT_KEY in .env
-    // Set up in Google Cloud: Create a service account and grant it Gmail API permissions
-
-    const adminEmail = process.env.GMAIL_SERVICE_ACCOUNT_EMAIL;
-    const serviceAccountKey = process.env.GMAIL_SERVICE_ACCOUNT_KEY;
-
-    if (!adminEmail || !serviceAccountKey) {
-      console.warn(
-        "Service account credentials not configured. Welcome email not sent for normal registration."
-      );
-      return {
-        success: true,
-        message: "Account created. Email sending not configured.",
-      };
-    }
-
-    // Parse service account key (it should be a JSON string)
-    let keyData;
-    try {
-      keyData =
-        typeof serviceAccountKey === "string"
-          ? JSON.parse(serviceAccountKey)
-          : serviceAccountKey;
-    } catch (e) {
-      throw new Error("Invalid service account key format");
-    }
-
-    // Create OAuth2 client using service account
-    const { google: googleAuth } = await import("google-auth-library");
-    const jwtClient = new googleAuth.auth.JWT({
-      email: keyData.client_email,
-      key: keyData.private_key,
-      scopes: ["https://www.googleapis.com/auth/gmail.send"],
-    });
-
-    const gmail = google.gmail({
-      version: "v1",
-      auth: jwtClient,
-    });
-
-    const subject = "Welcome to SafeSpend – Portal Access Granted";
-    const dashboardUrl = process.env.CLIENT_URL
-      ? `${process.env.CLIENT_URL}/dashboard`
-      : "https://safespend.app/dashboard";
-    const htmlMessage = getWelcomeEmailTemplate(
-      user.fullName,
-      "email",
-      dashboardUrl
+    const oAuth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET
     );
 
+    oAuth2Client.setCredentials({
+      refresh_token: process.env.GMAIL_REFRESH_TOKEN,
+    });
+
+    const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
+
     const raw = makeBody({
-      to: user.email,
-      from: adminEmail,
+      to,
+      from: process.env.EMAIL_USER || "me",
       subject,
       message: htmlMessage,
       isHtml: true,
     });
 
-    // Send the message
     const res = await gmail.users.messages.send({
       userId: "me",
       requestBody: {
@@ -152,13 +64,40 @@ async function sendWelcomeEmailViaGmail(user) {
       },
     });
 
-    console.log(`Welcome email sent to ${user.email}`);
     return res.data;
   } catch (error) {
-    console.error("Error in sendWelcomeEmailViaGmail:", error.message);
-    // Don't throw - let registration complete even if email fails
+    console.error("Gmail API Send Error:", error.response?.data || error.message);
     return { success: false, error: error.message };
   }
 }
 
-export { sendWelcomeEmail, sendWelcomeEmailViaGmail };
+/**
+ * Specifically sends a welcome email to a new user.
+ * This is the primary entry point used by controllers and passport.
+ */
+async function sendWelcomeEmailViaGmail(user) {
+  const subject = "Welcome to SafeSpend – Your Premium Finance Tracker";
+  const dashboardUrl = process.env.CLIENT_URL
+    ? `${process.env.CLIENT_URL}/dashboard`
+    : "https://safespend-pro.vercel.app/dashboard";
+
+  const htmlMessage = getWelcomeEmailTemplate(
+    user.fullName,
+    user.authProvider || "account",
+    dashboardUrl
+  );
+
+  console.log(`Attempting to send Gmail API welcome email to: ${user.email}`);
+  return await sendEmailViaGmailAPI({
+    to: user.email,
+    subject,
+    htmlMessage
+  });
+}
+
+// Deprecated: Use sendWelcomeEmailViaGmail instead for consistency
+async function sendWelcomeEmail(tokens, user) {
+  return await sendWelcomeEmailViaGmail(user);
+}
+
+export { sendWelcomeEmail, sendWelcomeEmailViaGmail, sendEmailViaGmailAPI };

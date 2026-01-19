@@ -67,7 +67,7 @@ if (
           // Send welcome email only on first creation
           if (isNew) {
             try {
-              // Note: This requires GMAIL_SERVICE_ACCOUNT_EMAIL or SMTP config on Render
+              // Note: This requires GMAIL_REFRESH_TOKEN and EMAIL_USER in .env
               await sendWelcomeEmailViaGmail(user);
             } catch (emailErr) {
               console.error("Error triggering welcome email flow:", emailErr);
