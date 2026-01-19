@@ -12,8 +12,14 @@ const AuthLayout = ({ children }) => {
       <div className="flex-1 flex flex-col p-6 sm:p-12 md:p-16 lg:p-24 relative z-10">
         {/* Branding Core */}
         <Link to="/" className="flex items-center gap-4 group mb-auto">
-          <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl shadow-white/5 group-hover:rotate-[20deg] transition-all duration-500 -mt-1">
-            <img src={APP_LOGO} alt="SafeSpend Logo" className="w-full h-full object-cover" />
+          <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl shadow-white/5 group-hover:rotate-[20deg] transition-all duration-500 -mt-1 bg-white/5">
+            <img
+              src={APP_LOGO}
+              alt="SafeSpend Logo"
+              width="48"
+              height="48"
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="flex flex-col">
             <h2 className="text-xl font-black tracking-tight text-[var(--color-text)] leading-none">
@@ -62,28 +68,37 @@ const AuthLayout = ({ children }) => {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] aspect-video bg-black/20 rounded-[40px] blur-3xl" />
 
           {/* Main Dashboard */}
-          <div className="relative w-full aspect-video z-30 transform hover:scale-[1.02] transition-transform duration-700">
+          <div className="relative w-full aspect-video z-30 transform hover:scale-[1.02] transition-transform duration-700 bg-white/5 rounded-[32px]">
             <div className="absolute inset-0 bg-gradient-to-tr from-primary to-transparent opacity-20 rounded-[32px] z-10" />
             <img
               src={SHOWCASE_DASHBOARD}
               alt="Dashboard Showcase"
+              loading="lazy"
+              width="800"
+              height="450"
               className="w-full h-full object-cover rounded-[32px] border border-white/10 shadow-2xl"
             />
           </div>
 
           {/* Staggered Secondary Cards */}
-          <div className="absolute -bottom-10 left-10 w-2/3 aspect-video z-40 animate-in slide-in-from-bottom-20 duration-1000">
+          <div className="absolute -bottom-10 left-10 w-2/3 aspect-video z-40 animate-in slide-in-from-bottom-20 duration-1000 bg-white/5 rounded-[24px]">
             <img
               src={SHOWCASE_INSIGHTS}
               alt="Insights Showcase"
+              loading="lazy"
+              width="600"
+              height="337"
               className="w-full h-full object-cover rounded-[24px] border border-white/10 shadow-2xl"
             />
           </div>
 
-          <div className="absolute -top-10 right-10 w-2/3 aspect-video z-20 opacity-40 blur-sm hover:blur-none transition-all duration-700">
+          <div className="absolute -top-10 right-10 w-2/3 aspect-video z-20 opacity-40 blur-sm hover:blur-none transition-all duration-700 bg-white/5 rounded-[24px]">
             <img
               src={SHOWCASE_BUDGET}
               alt="Budget Showcase"
+              loading="lazy"
+              width="600"
+              height="337"
               className="w-full h-full object-cover rounded-[24px] border border-white/10 shadow-lg"
             />
           </div>

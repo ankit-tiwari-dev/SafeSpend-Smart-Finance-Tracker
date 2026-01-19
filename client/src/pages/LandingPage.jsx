@@ -53,8 +53,14 @@ const LandingPage = () => {
                     <div className="flex items-center justify-between">
                         {/* Logo */}
                         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
-                            <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center shadow-lg shadow-white/5 group-hover:scale-105 transition-transform">
-                                <img src={APP_LOGO} alt="SafeSpend Logo" className="w-full h-full object-cover" />
+                            <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center shadow-lg shadow-white/5 group-hover:scale-105 transition-transform bg-white/5">
+                                <img
+                                    src={APP_LOGO}
+                                    alt="SafeSpend Logo"
+                                    width="40"
+                                    height="40"
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
                             <span className="text-xl sm:text-2xl font-bold tracking-tight">SafeSpend</span>
                         </div>
@@ -153,6 +159,10 @@ const LandingPage = () => {
                             <img
                                 src={HERO_BG}
                                 alt="Financial Globe"
+                                fetchpriority="high"
+                                loading="eager"
+                                width="500"
+                                height="500"
                                 className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
                             />
                         </div>
@@ -197,8 +207,15 @@ const LandingPage = () => {
                                 </div>
                                 <h3 className="text-2xl font-bold mb-3 text-gray-100">{feature.title}</h3>
                                 <p className="text-gray-400 leading-relaxed mb-8 flex-1 group-hover:text-gray-300 transition-colors">{feature.desc}</p>
-                                <div className="aspect-[16/10] rounded-xl overflow-hidden mt-auto grayscale group-hover:grayscale-0 transition-all duration-500 border border-white/5 group-hover:border-primary/20">
-                                    <img src={feature.img} alt={feature.title} className="w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+                                <div className="aspect-[16/10] rounded-xl overflow-hidden mt-auto grayscale group-hover:grayscale-0 transition-all duration-500 border border-white/5 group-hover:border-primary/20 bg-white/5">
+                                    <img
+                                        src={feature.img}
+                                        alt={feature.title}
+                                        loading="lazy"
+                                        width="400"
+                                        height="250"
+                                        className="w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -294,8 +311,15 @@ const LandingPage = () => {
                 <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 lg:gap-20">
                     <div className="col-span-1 sm:col-span-2 md:col-span-1 space-y-6">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
-                                <img src={APP_LOGO} alt="SafeSpend Logo" className="w-full h-full object-cover" />
+                            <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-white/5">
+                                <img
+                                    src={APP_LOGO}
+                                    alt="SafeSpend Logo"
+                                    loading="lazy"
+                                    width="32"
+                                    height="32"
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
                             <span className="text-xl font-bold tracking-tight uppercase">SafeSpend</span>
                         </div>
