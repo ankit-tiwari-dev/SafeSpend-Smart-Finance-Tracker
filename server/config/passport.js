@@ -3,7 +3,7 @@ dotenv.config();
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "../models/user.model.js";
-import { sendWelcomeEmail } from "../utils/googleMailer.js";
+import { sendWelcomeEmailViaGmail } from "../utils/googleMailer.js";
 import jwt from "jsonwebtoken";
 
 passport.serializeUser(function (user, done) {

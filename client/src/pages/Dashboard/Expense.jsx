@@ -95,8 +95,8 @@ const ExpensePage = () => {
     <DashboardLayout activeMenu="Expense">
       {/* Container with dynamic padding for various screen sizes */}
       <div className="py-8 sm:py-12 max-w-[1600px] mx-auto space-y-10 sm:space-y-16 px-4 sm:px-6 lg:px-8">
-        
-        {/* Header Section with Premium Accents */}
+
+        {/* Header Section with Premium Accents - No animations for top section to improve LCP */}
         <div className="relative">
           <div className="space-y-3 relative z-10">
             <h2 className="text-xs sm:text-sm font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[var(--color-text)]">
@@ -108,14 +108,14 @@ const ExpensePage = () => {
             <div className="h-[2px] w-24 sm:w-32 bg-gradient-to-r from-[var(--color-chart-4)] to-transparent" />
           </div>
           {/* Subtle background glow */}
-          <div className="absolute -top-10 -left-10 w-40 h-40 bg-[var(--color-chart-4)]/5 blur-[80px] pointer-events-none" />
+          <div className="absolute -top-10 -left-10 w-40 h-40 bg-[var(--color-chart-4)]/5 blur-[60px] pointer-events-none" />
         </div>
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 gap-10 sm:gap-16">
-          
-          {/* Expense Overview Section */}
-          <div className="transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
+
+          {/* Expense Overview Section - Reduced animation delay for LCP */}
+          <div className="animate-in fade-in duration-300">
             <ExpenseOverview
               transactions={expenseData}
               onAddExpense={() => {
@@ -127,7 +127,7 @@ const ExpensePage = () => {
 
           {/* Detailed Transaction List */}
           <div className="rounded-[32px] sm:rounded-[40px] border border-white/5 bg-white/[0.01] overflow-hidden">
-             <ExpenseList
+            <ExpenseList
               transactions={expenseData}
               isLoading={loading}
               onEdit={(expense) => {

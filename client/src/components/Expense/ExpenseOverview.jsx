@@ -24,11 +24,11 @@ const ExpenseOverview = ({ transactions, onAddExpense }) => {
         group
       "
     >
-      {/* 1. Dynamic Background Glow: Uses theme-aware primary/pink */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#FF4B7D]/5 to-transparent opacity-40 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-      
+      {/* 1. Dynamic Background Glow: Uses theme-aware primary/pink - Simplified for performance */}
+      <div className="absolute inset-0 bg-[#FF4B7D]/[0.02] pointer-events-none" />
+
       {/* 2. Cyber Grid: Now uses border variable for multi-theme visibility */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none border-[0.5px] border-[var(--color-border)]" style={{ backgroundImage: 'radial-gradient(var(--color-border) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(var(--color-border) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
 
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12 relative z-10">
         <div className="space-y-1">

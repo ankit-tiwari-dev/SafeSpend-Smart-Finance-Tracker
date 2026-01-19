@@ -37,7 +37,7 @@ const CustomLineChart = ({ data = [], isLoading = false }) => {
     <div className="w-full h-full relative">
       {/* Dynamic L-bracket decoration */}
       <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[var(--color-border)] opacity-30 rounded-tl-sm pointer-events-none" />
-      
+
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 10, right: 10, left: -15, bottom: 10 }}>
           <defs>
@@ -48,11 +48,11 @@ const CustomLineChart = ({ data = [], isLoading = false }) => {
           </defs>
 
           {/* Clean Grid - Responsive to theme variables */}
-          <CartesianGrid 
-            vertical={false} 
-            stroke="var(--color-border)" 
+          <CartesianGrid
+            vertical={false}
+            stroke="var(--color-border)"
             strokeOpacity={0.1}
-            strokeDasharray="4 4" 
+            strokeDasharray="4 4"
           />
 
           {/* Technical XAxis - Dynamic Visibility */}
@@ -60,9 +60,9 @@ const CustomLineChart = ({ data = [], isLoading = false }) => {
             dataKey="month"
             axisLine={false}
             tickLine={false}
-            tick={{ 
-              fontSize: 9, 
-              fill: "var(--color-text-muted)", 
+            tick={{
+              fontSize: 9,
+              fill: "var(--color-text-muted)",
               fontWeight: 900,
               letterSpacing: '0.1em',
               opacity: 0.5
@@ -74,9 +74,9 @@ const CustomLineChart = ({ data = [], isLoading = false }) => {
           <YAxis
             axisLine={false}
             tickLine={false}
-            tick={{ 
-              fontSize: 9, 
-              fill: "var(--color-text-muted)", 
+            tick={{
+              fontSize: 9,
+              fill: "var(--color-text-muted)",
               fontWeight: 900,
               opacity: 0.5
             }}
@@ -85,26 +85,26 @@ const CustomLineChart = ({ data = [], isLoading = false }) => {
             }
           />
 
-          <Tooltip 
-            content={<CustomToolTip />} 
+          <Tooltip
+            content={<CustomToolTip />}
             cursor={{ stroke: 'var(--color-border)', strokeWidth: 1, strokeOpacity: 0.2 }}
           />
 
           <Area
             type="monotone"
             dataKey="amount"
-            stroke="#00E5FF" 
+            stroke="#00E5FF"
             strokeWidth={2.5}
             fill="url(#burnGradient)"
-            animationBegin={200}
-            animationDuration={1200}
-            style={{ filter: "drop-shadow(0px 0px 12px rgba(0, 229, 255, 0.3))" }}
+            animationBegin={0}
+            animationDuration={800}
+            style={{ filter: "drop-shadow(0px 0px 8px rgba(0, 229, 255, 0.2))" }}
             dot={false}
-            activeDot={{ 
-              r: 4, 
-              fill: "#00E5FF", 
-              stroke: "var(--color-surface)", 
-              strokeWidth: 2 
+            activeDot={{
+              r: 4,
+              fill: "#00E5FF",
+              stroke: "var(--color-surface)",
+              strokeWidth: 2
             }}
           />
         </AreaChart>

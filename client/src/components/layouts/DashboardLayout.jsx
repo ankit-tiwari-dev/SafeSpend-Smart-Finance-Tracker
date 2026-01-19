@@ -21,7 +21,7 @@ const DashboardLayout = ({ children, activeMenu }) => {
 
     // Call immediately on mount to ensure state is synced
     checkSize();
-    
+
     window.addEventListener("resize", checkSize);
     return () => window.removeEventListener("resize", checkSize);
   }, []);
@@ -40,16 +40,18 @@ const DashboardLayout = ({ children, activeMenu }) => {
       </div>
 
       {/* Mobile Overlay */}
-      {isSideMenuOpen && !isLargeScreen && (
-        <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[55]"
-          onClick={() => setIsSideMenuOpen(false)}
-        />
-      )}
+      {
+        isSideMenuOpen && !isLargeScreen && (
+          <div
+            className="fixed inset-0 bg-black/60 z-[55] animate-in fade-in duration-300"
+            onClick={() => setIsSideMenuOpen(false)}
+          />
+        )
+      }
 
       {/* Main Content Area */}
       <div
-        className={`flex-1 flex flex-col min-w-0 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
+        className={`flex-1 flex flex-col min-w-0 transition-[padding] duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
           ${isSideMenuOpen && isLargeScreen ? "lg:pl-80" : "lg:pl-0"}`}
       >
         <Navbar
@@ -60,7 +62,7 @@ const DashboardLayout = ({ children, activeMenu }) => {
         <main className="flex-1 p-4 md:p-8">{children}</main>
         <Footer />
       </div>
-    </div>
+    </div >
   );
 };
 
