@@ -68,8 +68,8 @@ const LandingPage = () => {
                         {/* Desktop Links */}
                         <div className="hidden md:flex items-center gap-8">
                             <NavLink href="#features">Features</NavLink>
+                            <NavLink href="#security">Security</NavLink>
                             <NavLink href="#feedback">Feedback</NavLink>
-                            <NavLink href="#contact">Contact</NavLink>
                         </div>
 
                         {/* Desktop Actions */}
@@ -100,8 +100,8 @@ const LandingPage = () => {
                     <div className="md:hidden absolute top-full left-0 w-full bg-[#050505] border-b border-white/10 shadow-2xl animate-fade-in-down">
                         <div className="px-6 py-8 flex flex-col gap-2">
                             <NavLink href="#features" mobile>Features</NavLink>
+                            <NavLink href="#security" mobile>Security</NavLink>
                             <NavLink href="#feedback" mobile>Feedback</NavLink>
-                            <NavLink href="#contact" mobile>Contact</NavLink>
                             <div className="h-px bg-white/10 my-4" />
                             <Link
                                 to="/login"
@@ -175,8 +175,8 @@ const LandingPage = () => {
                 <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
                 <div className="max-w-7xl mx-auto text-center space-y-4 mb-20">
-                    <h2 className="text-3xl sm:text-5xl font-bold tracking-tight">Powerful tools to <span className="text-primary">grow your wealth.</span></h2>
-                    <p className="text-gray-400 max-w-2xl mx-auto text-lg">Everything you need to manage your money efficiently in a single platform.</p>
+                    <h2 className="text-3xl sm:text-5xl font-bold tracking-tight">Financial Mastery, <span className="text-primary">Simplified.</span></h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto text-lg">SafeSpend provides a comprehensive suite of tools designed to help you track, analyze, and optimize your personal finances through an intuitive, data-driven interface.</p>
                 </div>
 
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -220,6 +220,55 @@ const LandingPage = () => {
                             </div>
                         </div>
                     ))}
+                </div>
+            </section>
+
+            {/* Transparency & Security Section - Required for Google OAuth Verification */}
+            <section id="security" className="py-24 px-4 sm:px-8 bg-[#050505] relative overflow-hidden text-left">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 blur-[120px] rounded-full -z-10" />
+
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div className="order-2 lg:order-1 relative text-left">
+                        <div className="absolute -inset-4 bg-primary/10 blur-2xl rounded-full opacity-50" />
+                        <div className="relative bg-white/5 border border-white/10 rounded-[32px] p-8 sm:p-12 backdrop-blur-xl">
+                            <div className="space-y-8">
+                                <div className="flex gap-6">
+                                    <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary text-2xl shrink-0">
+                                        <LuShieldCheck />
+                                    </div>
+                                    <div className="text-left">
+                                        <h3 className="text-xl font-bold mb-2">Secure Authentication</h3>
+                                        <p className="text-gray-400 leading-relaxed text-sm">We use Google OAuth for secure, passwordless login. We only request your <strong>primary email address</strong> and basic profile info to identify you and protect your account.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-6">
+                                    <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary text-2xl shrink-0">
+                                        <LuChartLine />
+                                    </div>
+                                    <div className="text-left">
+                                        <h3 className="text-xl font-bold mb-2">Data Transparency</h3>
+                                        <p className="text-gray-400 leading-relaxed text-sm">Your financial data is private and encrypted. We use your email solely to send <strong>automated login notifications</strong> and <strong>account updates</strong> to keep you informed of your financial status.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="order-1 lg:order-2 space-y-6 text-left">
+                        <span className="text-primary text-sm font-bold uppercase tracking-widest block">Privacy First</span>
+                        <h2 className="text-3xl sm:text-5xl font-bold tracking-tight">Your data, <br /> protected by design.</h2>
+                        <p className="text-gray-400 text-lg leading-relaxed">
+                            At SafeSpend, transparency isn't just a feature—it's our foundation. We clearly outline why we need your data and how it helps you master your finances. No hidden tracking, no data selling. Just pure financial empowerment.
+                        </p>
+                        <ul className="space-y-4">
+                            {["Verified Google Authentication", "End-to-End Encrypted Data", "Transparent Usage Policies"].map((item, i) => (
+                                <li key={i} className="flex items-center gap-3 text-gray-300">
+                                    <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs">✓</div>
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             </section>
 
@@ -331,9 +380,9 @@ const LandingPage = () => {
                     <div>
                         <h4 className="font-bold mb-6 text-white">Product</h4>
                         <ul className="space-y-4 text-sm text-gray-500">
-                            <li><a href="#" className="hover:text-primary transition-colors">Features</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Security</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Integrations</a></li>
+                            <li><a href="#features" className="hover:text-primary transition-colors">Features</a></li>
+                            <li><a href="#security" className="hover:text-primary transition-colors">Security</a></li>
+                            <li><a href="#feedback" className="hover:text-primary transition-colors">Testimonials</a></li>
                         </ul>
                     </div>
 
