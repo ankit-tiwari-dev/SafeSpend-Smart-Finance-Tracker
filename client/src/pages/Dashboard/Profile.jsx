@@ -9,7 +9,7 @@ import { toast } from "react-hot-toast";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import Modal from "../../components/Modal";
 import ConfirmAlert from "../../components/ConfirmAlert";
-import { LuPencil, LuTrash2, LuBan, LuCamera } from "react-icons/lu";
+import { LuPencil, LuTrash2, LuBan, LuCamera, LuShieldCheck } from "react-icons/lu";
 
 const Profile = () => {
   useUserAuth();
@@ -34,6 +34,13 @@ const Profile = () => {
 
   const [clearAllTransactions, setClearAllTransactions] = useState(false);
   const [deleteAccount, setDeleteAccount] = useState(false);
+  const [isUpdatePasswordOpen, setIsUpdatePasswordOpen] = useState(false);
+  const [updatePasswordData, setUpdatePasswordData] = useState({
+    otp: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [isOtpSent, setIsOtpSent] = useState(false);
 
   const { clearUser } = useContext(UserContext);
   const navigate = useNavigate();
@@ -140,6 +147,44 @@ const Profile = () => {
     }
   };
 
+  const handleSendOtp = async () => {
+    setLoading(true);
+    try {
+      await axiosInstance.post(API_PATHS.AUTH.SEND_OTP);
+      setIsOtpSent(true);
+      toast.success("Security code transmitted to your linked email.");
+    } catch (error) {
+      toast.error("Failed to send security code.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (updatePasswordData.newPassword !== updatePasswordData.confirmPassword) {
+      return toast.error("Keys do not match.");
+    }
+    if (updatePasswordData.otp.length !== 6) {
+      return toast.error("Invalid security code.");
+    }
+
+    setLoading(true);
+    try {
+      await axiosInstance.put(API_PATHS.AUTH.UPDATE_PASSWORD, {
+        otp: updatePasswordData.otp,
+        newPassword: updatePasswordData.newPassword,
+      });
+      toast.success("Security protocols updated. Access key synchronized.");
+      setIsUpdatePasswordOpen(false);
+      setUpdatePasswordData({ otp: "", newPassword: "", confirmPassword: "" });
+      setIsOtpSent(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Protocol update failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchUserProfile();
   }, []);
@@ -172,6 +217,17 @@ const Profile = () => {
                   />
                   <span className="text-[var(--color-primary-contrast)] font-black uppercase tracking-widest text-[10px]">
                     Refine Signature
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setIsUpdatePasswordOpen(true)}
+                  className="p-4 rounded-2xl bg-[var(--color-divider)] hover:bg-emerald-500/10 border border-[var(--color-border)] hover:border-emerald-500/20 transition-all text-[var(--color-text-muted)] hover:text-emerald-500 flex items-center gap-2 group"
+                  title="Update Access Key"
+                >
+                  <LuShieldCheck size={18} />
+                  <span className="hidden sm:inline text-[9px] font-black uppercase tracking-widest">
+                    Secure
                   </span>
                 </button>
 
@@ -265,9 +321,8 @@ const Profile = () => {
                   Neural Codex (Bio)
                 </label>
                 <div
-                  className={`p-6 sm:p-8 rounded-[32px] sm:rounded-[40px] bg-[var(--color-bg)] border border-[var(--color-border)] transition-all ${
-                    isEditing ? "border-primary/60 ring-2 ring-primary/10" : ""
-                  }`}
+                  className={`p-6 sm:p-8 rounded-[32px] sm:rounded-[40px] bg-[var(--color-bg)] border border-[var(--color-border)] transition-all ${isEditing ? "border-primary/60 ring-2 ring-primary/10" : ""
+                    }`}
                 >
                   {isEditing ? (
                     <textarea
@@ -322,11 +377,10 @@ const Profile = () => {
                     onChange={(e) =>
                       setProfileData({ ...profileData, gender: e.target.value })
                     }
-                    className={`w-full py-4 px-6 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl text-[var(--color-text)] font-black uppercase tracking-widest text-[10px] outline-none transition-all ${
-                      isEditing
+                    className={`w-full py-4 px-6 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl text-[var(--color-text)] font-black uppercase tracking-widest text-[10px] outline-none transition-all ${isEditing
                         ? "border-primary/40 focus:ring-4 focus:ring-primary/5 cursor-pointer"
                         : "opacity-40"
-                    }`}
+                      }`}
                   >
                     <option value="">Undeclared</option>
                     <option value="Male">Male</option>
@@ -433,6 +487,90 @@ const Profile = () => {
           />
         </div>
       </Modal>
+
+      <Modal
+        isOpen={isUpdatePasswordOpen}
+        onClose={() => {
+          setIsUpdatePasswordOpen(false);
+          setIsOtpSent(false);
+        }}
+        title="Security Access Protocol"
+      >
+        <div className="p-4 space-y-6">
+          {!isOtpSent ? (
+            <div className="space-y-4 text-center">
+              <p className="text-xs font-bold text-[var(--color-text-muted)] opacity-60">
+                To update your access key, we must verify your identity via a one-time security code.
+              </p>
+              <button
+                onClick={handleSendOtp}
+                className="btn-primary w-full py-4 text-[10px] tracking-[0.2em]"
+                disabled={loading}
+              >
+                {loading ? "TRANSMITTING..." : "GENERATE SECURITY CODE"}
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">
+                  Security Code
+                </label>
+                <input
+                  type="text"
+                  placeholder="000000"
+                  maxLength={6}
+                  value={updatePasswordData.otp}
+                  onChange={(e) => setUpdatePasswordData({ ...updatePasswordData, otp: e.target.value })}
+                  className="w-full py-4 px-6 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl text-center text-2xl font-black tracking-[0.5em] focus:border-primary/40 focus:ring-4 focus:ring-primary/5 outline-none"
+                />
+              </div>
+
+              <div className="space-y-4">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">
+                  New Access Key
+                </label>
+                <input
+                  type="password"
+                  placeholder="Minimum 8 characters"
+                  value={updatePasswordData.newPassword}
+                  onChange={(e) => setUpdatePasswordData({ ...updatePasswordData, newPassword: e.target.value })}
+                  className="w-full py-4 px-6 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl text-xs font-bold focus:border-primary/40 focus:ring-4 focus:ring-primary/5 outline-none"
+                />
+              </div>
+
+              <div className="space-y-4">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">
+                  Verify New Key
+                </label>
+                <input
+                  type="password"
+                  placeholder="Re-enter access key"
+                  value={updatePasswordData.confirmPassword}
+                  onChange={(e) => setUpdatePasswordData({ ...updatePasswordData, confirmPassword: e.target.value })}
+                  className="w-full py-4 px-6 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl text-xs font-bold focus:border-primary/40 focus:ring-4 focus:ring-primary/5 outline-none"
+                />
+              </div>
+
+              <button
+                onClick={handleUpdatePassword}
+                className="btn-primary w-full py-4 text-[10px] tracking-[0.2em]"
+                disabled={loading}
+              >
+                {loading ? "COMMITTING..." : "AUTHORIZE UPDATE"}
+              </button>
+
+              <button
+                onClick={() => setIsOtpSent(false)}
+                className="w-full py-2 text-[9px] font-black uppercase tracking-widest text-primary/40 hover:text-primary transition-colors"
+                disabled={loading}
+              >
+                Resend Code?
+              </button>
+            </div>
+          )}
+        </div>
+      </Modal>
     </DashboardLayout>
   );
 };
@@ -450,9 +588,8 @@ const ProfileField = ({
       {label}
     </label>
     <div
-      className={`transition-all duration-300 ${
-        isEditing ? "scale-[1.02]" : ""
-      }`}
+      className={`transition-all duration-300 ${isEditing ? "scale-[1.02]" : ""
+        }`}
     >
       <input
         type={type}
@@ -460,11 +597,10 @@ const ProfileField = ({
         disabled={!isEditing}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full py-4 px-6 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl text-[var(--color-text)] font-bold text-xs outline-none transition-all ${
-          isEditing
+        className={`w-full py-4 px-6 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl text-[var(--color-text)] font-bold text-xs outline-none transition-all ${isEditing
             ? "border-primary/40 focus:ring-4 focus:ring-primary/5 placeholder:opacity-20"
             : "opacity-40"
-        }`}
+          }`}
       />
     </div>
   </div>

@@ -4,7 +4,7 @@ import Expense from "../models/expense.model.js";
 import Budget from "../models/budget.model.js";
 import Goal from "../models/goal.model.js";
 import jwt from "jsonwebtoken";
-import { sendWelcomeEmailViaGmail } from "../utils/googleMailer.js";
+import { sendWelcomeEmailViaGmail, sendOTPEmailViaGmail } from "../utils/googleMailer.js";
 
 
 // Generate JWT token
@@ -170,5 +170,134 @@ export async function updateProfile(req, res) {
     res
       .status(500)
       .json({ message: "Error updating profile", error: error.message });
+  }
+}
+
+// Check if Email Exists
+export async function checkEmailExists(req, res) {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: "Email is required" });
+
+  try {
+    const user = await User.findOne({ email });
+    res.status(200).json({ exists: !!user });
+  } catch (error) {
+    res.status(500).json({ message: "Error checking email", error: error.message });
+  }
+}
+
+// Send OTP
+export async function sendOTP(req, res) {
+  const { email } = req.body;
+
+  try {
+    // If user is logged in, use their email if none provided
+    const targetEmail = email || (req.user ? (await User.findById(req.user.id))?.email : null);
+
+    if (!targetEmail) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email: targetEmail });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate 6 digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    await user.save();
+
+    await sendOTPEmailViaGmail(targetEmail, otp);
+
+    res.status(200).json({ message: "OTP sent successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error sending OTP", error: error.message });
+  }
+}
+
+// Verify OTP
+export async function verifyOTP(req, res) {
+  const { email, otp } = req.body;
+
+  try {
+    const targetEmail = email || (req.user ? (await User.findById(req.user.id))?.email : null);
+
+    if (!targetEmail || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
+
+    const user = await User.findOne({
+      email: targetEmail,
+      otp,
+      otpExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    res.status(200).json({ message: "OTP verified successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error verifying OTP", error: error.message });
+  }
+}
+
+// Reset Password (Forgot Password flow)
+export async function resetPassword(req, res) {
+  const { email, otp, newPassword } = req.body;
+
+  if (!email || !otp || !newPassword) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  try {
+    const user = await User.findOne({
+      email,
+      otp,
+      otpExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    user.password = newPassword;
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error resetting password", error: error.message });
+  }
+}
+
+// Update Password (Logged-in User flow)
+export async function updatePassword(req, res) {
+  const userId = req.user.id;
+  const { otp, newPassword } = req.body;
+
+  if (!otp || !newPassword) {
+    return res.status(400).json({ message: "OTP and new password are required" });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.otp !== otp || user.otpExpires < Date.now()) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    user.password = newPassword;
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating password", error: error.message });
   }
 }

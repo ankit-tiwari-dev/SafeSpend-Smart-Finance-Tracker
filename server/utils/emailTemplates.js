@@ -341,4 +341,54 @@ const getWelcomeEmailTemplate = (
 `;
 };
 
-export { getWelcomeEmailTemplate };
+const getOTPEmailTemplate = (otpCode) => {
+  const year = new Date().getFullYear();
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SafeSpend Verification Code</title>
+</head>
+<body style="margin:0;padding:0;background-color:#050505;font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#ffffff;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#050505;padding:40px 10px;">
+  <tr>
+    <td align="center">
+      <table width="500" cellpadding="0" cellspacing="0" style="background-color:#0f1115;border-radius:32px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);">
+        <tr>
+          <td style="padding:48px;text-align:center;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);">
+            <h1 style="margin:0;font-size:24px;font-weight:900;color:#ffffff;letter-spacing:0.1em;text-transform:uppercase;">SafeSpend Security</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:48px;">
+            <h2 style="margin:0 0 16px;font-size:22px;font-weight:900;color:#ffffff;text-transform:uppercase;">Verification Required</h2>
+            <p style="margin:0 0 32px;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.6;font-weight:500;">
+              Use the following security code to authenticate your request. This code will expire in 10 minutes.
+            </p>
+            <div style="background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.2);padding:32px;border-radius:24px;text-align:center;">
+              <span style="font-size:48px;font-weight:900;color:#00e5ff;letter-spacing:12px;">${otpCode}</span>
+            </div>
+            <p style="margin:32px 0 0;font-size:12px;color:rgba(255,255,255,0.4);line-height:1.6;font-weight:600;text-align:center;">
+              If you did not initiate this request, please ignore this email or contact security support.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:rgba(0,0,0,0.3);padding:24px;text-align:center;border-top:1px solid rgba(255,255,255,0.06);">
+            <p style="margin:0;font-size:10px;color:rgba(255,255,255,0.2);letter-spacing:0.05em;font-weight:700;">
+              © ${year} SafeSpend Technologies Inc. Secure Protocol.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
+`;
+};
+
+export { getWelcomeEmailTemplate, getOTPEmailTemplate };

@@ -7,6 +7,11 @@ export const API_PATHS = {
     GET_USER_INFO: "api/v1/auth/getUser",
     DELETE_ACCOUNT: "api/v1/auth/deleteAccount",
     UPDATE_PROFILE: "api/v1/auth/update-profile",
+    CHECK_EMAIL: "api/v1/auth/check-email",
+    SEND_OTP: "api/v1/auth/send-otp",
+    VERIFY_OTP: "api/v1/auth/verify-otp",
+    RESET_PASSWORD: "api/v1/auth/reset-password",
+    UPDATE_PASSWORD: "api/v1/auth/update-password",
   },
   DASHBOARD: {
     GET_DATA: "api/v1/dashboard",

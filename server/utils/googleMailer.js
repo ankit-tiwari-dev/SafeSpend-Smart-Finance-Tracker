@@ -1,5 +1,5 @@
 import { google } from "googleapis";
-import { getWelcomeEmailTemplate } from "./emailTemplates.js";
+import { getWelcomeEmailTemplate, getOTPEmailTemplate } from "./emailTemplates.js";
 
 function makeBody({ to, from, subject, message, isHtml = false }) {
   const contentType = isHtml
@@ -64,10 +64,20 @@ async function sendEmailViaGmailAPI({ to, subject, htmlMessage }) {
       },
     });
 
-    return res.data;
+    console.log(`✅ Email successfully dispatched to: ${to} (Message ID: ${res.data.id})`);
+    return { success: true, data: res.data };
   } catch (error) {
-    console.error("Gmail API Send Error:", error.response?.data || error.message);
-    return { success: false, error: error.message };
+    const errorDetails = error.response?.data?.error || error.message;
+    console.error("❌ Gmail API Critical Failure:", JSON.stringify(errorDetails, null, 2));
+
+    // Help users debug common OAuth errors
+    if (error.response?.status === 401) {
+      console.error("💡 TIP: This likely indicates an expired refresh token or invalid credentials. Check GMAIL_REFRESH_TOKEN.");
+    } else if (error.response?.status === 403) {
+      console.error("💡 TIP: This might be an 'Access Blocked' error. Ensure your developer email is added to 'Test users' in Google Cloud Console.");
+    }
+
+    return { success: false, error: errorDetails };
   }
 }
 
@@ -87,12 +97,18 @@ async function sendWelcomeEmailViaGmail(user) {
     dashboardUrl
   );
 
-  console.log(`Attempting to send Gmail API welcome email to: ${user.email}`);
-  return await sendEmailViaGmailAPI({
+  console.log(`🚀 Triggering welcome protocol for: ${user.email} (${user.fullName})`);
+  const result = await sendEmailViaGmailAPI({
     to: user.email,
     subject,
     htmlMessage
   });
+
+  if (!result.success) {
+    console.error(`⚠️ Welcome email delivery failed for ${user.email}. System proceeding without interruption.`);
+  }
+
+  return result;
 }
 
 // Deprecated: Use sendWelcomeEmailViaGmail instead for consistency
@@ -100,4 +116,19 @@ async function sendWelcomeEmail(tokens, user) {
   return await sendWelcomeEmailViaGmail(user);
 }
 
-export { sendWelcomeEmail, sendWelcomeEmailViaGmail, sendEmailViaGmailAPI };
+/**
+ * Specifically sends an OTP verification email.
+ */
+async function sendOTPEmailViaGmail(email, otpCode) {
+  const subject = `Your SafeSpend Security Code: ${otpCode}`;
+  const htmlMessage = getOTPEmailTemplate(otpCode);
+
+  console.log(`Attempting to send Gmail API OTP email to: ${email}`);
+  return await sendEmailViaGmailAPI({
+    to: email,
+    subject,
+    htmlMessage,
+  });
+}
+
+export { sendWelcomeEmail, sendWelcomeEmailViaGmail, sendEmailViaGmailAPI, sendOTPEmailViaGmail };

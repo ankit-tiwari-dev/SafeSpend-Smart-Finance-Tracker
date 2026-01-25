@@ -11,9 +11,27 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-
+  const [emailStatus, setEmailStatus] = useState(null); 
   const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
+
+  const checkEmail = async (emailToCheck) => {
+    if (!validateEmail(emailToCheck)) {
+      setEmailStatus(null);
+      return;
+    }
+    setEmailStatus("checking");
+    try {
+      const response = await axiosInstance.post(API_PATHS.AUTH.CHECK_EMAIL, { email: emailToCheck });
+      if (response.data.exists) {
+        setEmailStatus("valid");
+      } else {
+        setEmailStatus("invalid");
+      }
+    } catch (err) {
+      setEmailStatus(null);
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -60,20 +78,43 @@ const LoginPage = () => {
 
         {/* Login Form */}
         <form onSubmit={handleLogin} className="space-y-6">
-          <Input
-            value={email}
-            onChange={({ target }) => setEmail(target.value)}
-            label="Security Identifier (Email)"
-            placeholder="e.g. agent@safespend.io"
-            type="text"
-          />
-          <Input
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-            label="Access Protocol (Password)"
-            placeholder="Enter security key"
-            type="password"
-          />
+          <div className="relative">
+            <Input
+              value={email}
+              onChange={({ target }) => setEmail(target.value)}
+              onBlur={({ target }) => checkEmail(target.value)}
+              label="Security Identifier (Email)"
+              placeholder="e.g. agent@safespend.io"
+              type="text"
+            />
+            {emailStatus === "invalid" && (
+              <p className="absolute -bottom-5 left-0 text-[10px] font-black uppercase text-red-500 tracking-widest animate-pulse">
+                ID NOT FOUND IN DATABASE
+              </p>
+            )}
+            {emailStatus === "valid" && (
+              <p className="absolute -bottom-5 left-0 text-[10px] font-black uppercase text-emerald-500 tracking-widest">
+                ID VERIFIED
+              </p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Input
+              value={password}
+              onChange={({ target }) => setPassword(target.value)}
+              label="Access Protocol (Password)"
+              placeholder="Enter security key"
+              type="password"
+            />
+            <div className="flex justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-[10px] font-black uppercase tracking-widest text-[var(--color-primary)] hover:opacity-70 transition-opacity"
+              >
+                Forgot Access Key?
+              </Link>
+            </div>
+          </div>
 
           {error && (
             <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">

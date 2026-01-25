@@ -53,6 +53,14 @@ const UserSchema = new Schema(
         danger: { type: Number, default: 100 },
       },
     },
+    otp: {
+      type: String,
+      default: null,
+    },
+    otpExpires: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

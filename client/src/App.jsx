@@ -7,6 +7,8 @@ import {
 
 import Login from "./pages/Auth/Login";
 import SignUp from "./pages/Auth/SignUp";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
+import ResetPassword from "./pages/Auth/ResetPassword";
 import Home from "./pages/Dashboard/Home";
 import Income from "./pages/Dashboard/Income";
 import Expense from "./pages/Dashboard/Expense";
@@ -64,6 +66,8 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Home />} />
             <Route path="/income" element={<Income />} />
             <Route path="/expense" element={<Expense />} />

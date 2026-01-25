@@ -17,9 +17,28 @@ const SignUpPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [emailStatus, setEmailStatus] = useState(null); // 'taken', 'available', 'checking'
 
   const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
+
+  const checkEmail = async (emailToCheck) => {
+    if (!validateEmail(emailToCheck)) {
+      setEmailStatus(null);
+      return;
+    }
+    setEmailStatus("checking");
+    try {
+      const response = await axiosInstance.post(API_PATHS.AUTH.CHECK_EMAIL, { email: emailToCheck });
+      if (response.data.exists) {
+        setEmailStatus("taken");
+      } else {
+        setEmailStatus("available");
+      }
+    } catch (err) {
+      setEmailStatus(null);
+    }
+  };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -88,13 +107,26 @@ const SignUpPage = () => {
               placeholder="e.g. John Wick"
               type="text"
             />
-            <Input
-              value={email}
-              onChange={({ target }) => setEmail(target.value)}
-              label="Contact Identifier"
-              placeholder="agent@safespend.io"
-              type="text"
-            />
+            <div className="relative">
+              <Input
+                value={email}
+                onChange={({ target }) => setEmail(target.value)}
+                onBlur={({ target }) => checkEmail(target.value)}
+                label="Contact Identifier"
+                placeholder="agent@safespend.io"
+                type="text"
+              />
+              {emailStatus === "taken" && (
+                <p className="absolute -bottom-5 left-0 text-[10px] font-black uppercase text-red-500 tracking-widest animate-pulse">
+                  ID ALREADY INITIALIZED
+                </p>
+              )}
+              {emailStatus === "available" && (
+                <p className="absolute -bottom-5 left-0 text-[10px] font-black uppercase text-emerald-500 tracking-widest">
+                  ID AVAILABLE
+                </p>
+              )}
+            </div>
             <Input
               value={password}
               onChange={({ target }) => setPassword(target.value)}
