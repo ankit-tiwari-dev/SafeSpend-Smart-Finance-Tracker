@@ -25,10 +25,13 @@ export async function registerUser(req, res) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  // Upgrade: Perform advanced verification (MX, SMTP, Entropy)
-  const validation = await validateEmailDomain(email);
+  // Upgrade: Perform advanced verification (MX, SMTP, Entropy) with Rate Limiting
+  const validation = await validateEmailDomain(email, req.ip);
   if (!validation.valid) {
-    return res.status(200).json({ invalid: true, message: validation.message });
+    return res.status(validation.rateLimited ? 429 : 200).json({
+      invalid: true,
+      message: validation.message
+    });
   }
 
   try {
@@ -209,10 +212,14 @@ export async function checkEmailExists(req, res) {
   if (!email) return res.status(400).json({ message: "Email is required" });
 
   try {
-    // Perform advanced verification (MX, SMTP, Entropy)
-    const validation = await validateEmailDomain(email);
+    // Perform advanced verification (MX, SMTP, Entropy) with Rate Limiting
+    const validation = await validateEmailDomain(email, req.ip);
     if (!validation.valid) {
-      return res.status(200).json({ exists: false, invalid: true, message: validation.message });
+      return res.status(validation.rateLimited ? 429 : 200).json({
+        exists: false,
+        invalid: true,
+        message: validation.message
+      });
     }
 
     const user = await User.findOne({ email });

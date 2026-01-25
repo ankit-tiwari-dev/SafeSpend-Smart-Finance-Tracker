@@ -1,4 +1,17 @@
 import validate from "deep-email-validator";
+import { RateLimiterMemory } from "rate-limiter-flexible";
+
+// 1. Hourly attempt limiter (5 per hour)
+const hourlyLimiter = new RateLimiterMemory({
+    points: 5,
+    duration: 3600, // 1 hour
+});
+
+// 2. Failure block limiter (3 fails in 15 mins)
+const failureLimiter = new RateLimiterMemory({
+    points: 3,
+    duration: 900, // 15 mins
+});
 
 /**
  * Calculates the entropy of a string to detect "gibberish" or random prefixes.
@@ -31,12 +44,36 @@ function isGibberish(prefix) {
  * 3. Disposable email provider check
  * 4. SMTP Handshake (Mailbox existence)
  */
-export async function validateEmailDomain(email) {
+export async function validateEmailDomain(email, ip) {
     const prefix = email.split("@")[0];
     const professionalErrorMessage = "Account not found. Please verify your credentials or register a new account.";
+    const securityTriggerMsg = "Security check triggered. Too many attempts from this connection. Please try again in an hour.";
+
+    // 0. Rate Limiting Check
+    try {
+        // Check failure block first (15 mins)
+        const failRes = await failureLimiter.get(ip);
+        if (failRes && failRes.remainingPoints <= 0) {
+            return {
+                valid: false,
+                rateLimited: true,
+                message: "Security threat detected. Connection blocked for 15 minutes due to multiple invalid IDs."
+            };
+        }
+
+        // Check hourly limit (5 per hour)
+        await hourlyLimiter.consume(ip);
+    } catch (limitRes) {
+        return {
+            valid: false,
+            rateLimited: true,
+            message: securityTriggerMsg
+        };
+    }
 
     // 1. Entropy Analysis (Gibberish Detection)
     if (isGibberish(prefix)) {
+        await failureLimiter.consume(ip).catch(() => { }); // Count as failure
         return {
             valid: false,
             message: "Unrecognized Identifier. Please provide a standard contact protocol."
@@ -47,14 +84,11 @@ export async function validateEmailDomain(email) {
         // 2. Deep Validation (Syntax, MX, Disposable, SMTP Handshake)
         const res = await validate({
             email: email,
-            validateRegex: true,
-            validateMx: true,
-            validateTypo: true,
-            validateDisposable: true,
-            validateSMTP: true, // Performs the RCPT TO handshake
+            validateSMTP: true,
         });
 
         if (!res.valid) {
+            await failureLimiter.consume(ip).catch(() => { }); // Count as failure
             // Check if it's a disposable email
             if (res.validators.disposable && !res.validators.disposable.valid) {
                 return { valid: false, message: "Disposable email providers are not permitted for elite access." };
@@ -66,6 +100,9 @@ export async function validateEmailDomain(email) {
                 message: professionalErrorMessage
             };
         }
+
+        // Success: Reset failure count for this IP
+        await failureLimiter.delete(ip).catch(() => { });
 
         return { valid: true, message: "ID routing verified." };
     } catch (error) {
