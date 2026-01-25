@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { protect } from "../middleware/auth.middleware.js";
 import uploadMiddleware from "../middleware/upload.middleware.js";
-import { registerUser, loginUser, getUserInfo, deleteAccount, updateProfile, checkEmailExists, sendOTP, verifyOTP, resetPassword, updatePassword } from "../controllers/auth.controller.js";
+import { registerUser, loginUser, getUserInfo, deleteAccount, updateProfile, checkEmailExists, sendOTP, verifyOTP, resetPassword, updatePassword, verifySignupOTP } from "../controllers/auth.controller.js";
 import passport from "passport";
 import jwt from "jsonwebtoken";
 
@@ -24,6 +24,7 @@ router.put("/update-profile", protect, updateProfile);
 router.post("/check-email", checkEmailExists);
 router.post("/send-otp", sendOTP);
 router.post("/verify-otp", verifyOTP);
+router.post("/verify-signup", verifySignupOTP);
 router.post("/reset-password", resetPassword);
 router.put("/update-password", protect, updatePassword);
 

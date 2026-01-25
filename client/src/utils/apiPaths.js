@@ -10,6 +10,7 @@ export const API_PATHS = {
     CHECK_EMAIL: "api/v1/auth/check-email",
     SEND_OTP: "api/v1/auth/send-otp",
     VERIFY_OTP: "api/v1/auth/verify-otp",
+    VERIFY_SIGNUP: "api/v1/auth/verify-signup",
     RESET_PASSWORD: "api/v1/auth/reset-password",
     UPDATE_PASSWORD: "api/v1/auth/update-password",
   },

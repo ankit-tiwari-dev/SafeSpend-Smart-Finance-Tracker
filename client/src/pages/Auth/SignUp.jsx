@@ -18,6 +18,8 @@ const SignUpPage = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null); // 'taken', 'available', 'checking'
+  const [isOtpStep, setIsOtpStep] = useState(false);
+  const [otp, setOtp] = useState("");
 
   const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
@@ -63,22 +65,35 @@ const SignUpPage = () => {
         profileImageUrl = imgUploadRes.imageUrl || "";
       }
 
-      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
-        fullName: trimmedName,
-        email: trimmedEmail,
-        password,
-        profileImageUrl,
+      if (response.data) {
+        setIsOtpStep(true);
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Sign up failed, please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifySignUp = async (e) => {
+    e.preventDefault();
+    if (otp.length !== 6) return setError("Please enter the 6-digit code.");
+    setLoading(true);
+
+    try {
+      const response = await axiosInstance.post(API_PATHS.AUTH.VERIFY_SIGNUP, {
+        email: email.trim(),
+        otp,
       });
 
       const { token, user } = response.data;
-
       if (token) {
         localStorage.setItem("token", token);
         updateUser(user);
         navigate("/dashboard");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Sign up failed, please try again.");
+      setError(err.response?.data?.message || "Verification failed.");
     } finally {
       setLoading(false);
     }
@@ -92,82 +107,124 @@ const SignUpPage = () => {
             Credential Deployment
           </h1>
           <p className="text-sm font-bold text-[var(--color-text-muted)] opacity-60">
-            Join the elite tier of asset management.
+            {isOtpStep ? "Verify your email to activate your account." : "Join the elite tier of asset management."}
           </p>
         </div>
 
-        <form onSubmit={handleSignUp} className="space-y-8">
-          <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} />
+        {!isOtpStep ? (
+          <form onSubmit={handleSignUp} className="space-y-8">
+            <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
-            <Input
-              value={fullName}
-              onChange={({ target }) => setFullName(target.value)}
-              label="Legal Name"
-              placeholder="e.g. John Wick"
-              type="text"
-            />
-            <div className="relative">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
               <Input
-                value={email}
-                onChange={({ target }) => setEmail(target.value)}
-                onBlur={({ target }) => checkEmail(target.value)}
-                label="Contact Identifier"
-                placeholder="agent@safespend.io"
+                value={fullName}
+                onChange={({ target }) => setFullName(target.value)}
+                label="Legal Name"
+                placeholder="e.g. John Wick"
                 type="text"
               />
-              {emailStatus === "taken" && (
-                <p className="absolute -bottom-5 left-0 text-[10px] font-black uppercase text-red-500 tracking-widest animate-pulse">
-                  ID ALREADY INITIALIZED
-                </p>
-              )}
-              {emailStatus === "available" && (
-                <p className="absolute -bottom-5 left-0 text-[10px] font-black uppercase text-emerald-500 tracking-widest">
-                  ID AVAILABLE
-                </p>
-              )}
+              <div className="relative">
+                <Input
+                  value={email}
+                  onChange={({ target }) => setEmail(target.value)}
+                  onBlur={({ target }) => checkEmail(target.value)}
+                  label="Contact Identifier"
+                  placeholder="agent@safespend.io"
+                  type="text"
+                />
+                {emailStatus === "taken" && (
+                  <p className="absolute -bottom-5 left-0 text-[10px] font-black uppercase text-red-500 tracking-widest animate-pulse">
+                    ID ALREADY INITIALIZED
+                  </p>
+                )}
+                {emailStatus === "available" && (
+                  <p className="absolute -bottom-5 left-0 text-[10px] font-black uppercase text-emerald-500 tracking-widest">
+                    ID AVAILABLE
+                  </p>
+                )}
+              </div>
+              <Input
+                value={password}
+                onChange={({ target }) => setPassword(target.value)}
+                label="Security Key"
+                placeholder="Minimum 8 characters"
+                type="password"
+              />
+              <Input
+                value={confirmPassword}
+                onChange={({ target }) => setConfirmPassword(target.value)}
+                label="Key Verification"
+                placeholder="Re-enter security key"
+                type="password"
+              />
             </div>
-            <Input
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
-              label="Security Key"
-              placeholder="Minimum 8 characters"
-              type="password"
-            />
-            <Input
-              value={confirmPassword}
-              onChange={({ target }) => setConfirmPassword(target.value)}
-              label="Key Verification"
-              placeholder="Re-enter security key"
-              type="password"
-            />
-          </div>
 
-          {error && (
-            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
-              <p className="text-xs font-black text-red-500 uppercase tracking-widest text-center">
-                {error}
-              </p>
+            {error && (
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
+                <p className="text-xs font-black text-red-500 uppercase tracking-widest text-center">
+                  {error}
+                </p>
+              </div>
+            )}
+
+            <div className="pt-4">
+              <button
+                type="submit"
+                className={`btn-primary w-full py-4 text-sm tracking-[0.3em] ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+                disabled={loading}
+              >
+                {loading ? "Establishing ID..." : "ESTABLISH SAFESPEND ID"}
+              </button>
             </div>
-          )}
 
-          <div className="pt-4">
+            <p className="text-xs font-bold text-center text-[var(--color-text-muted)]">
+              Already authenticated?{" "}
+              <Link className="text-[var(--color-primary)] hover:underline ml-1" to="/login">
+                Portal Access
+              </Link>
+            </p>
+          </form>
+        ) : (
+          <form onSubmit={handleVerifySignUp} className="space-y-8">
+            <div className="space-y-4">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">
+                Verification Code Sent to {email}
+              </label>
+              <input
+                type="text"
+                placeholder="000000"
+                maxLength={6}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="w-full py-4 px-6 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl text-center text-3xl font-black tracking-[0.5em] focus:border-primary/40 focus:ring-4 focus:ring-primary/5 outline-none"
+              />
+            </div>
+
+            {error && (
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
+                <p className="text-xs font-black text-red-500 uppercase tracking-widest text-center">
+                  {error}
+                </p>
+              </div>
+            )}
+
             <button
               type="submit"
               className={`btn-primary w-full py-4 text-sm tracking-[0.3em] ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
               disabled={loading}
             >
-              {loading ? "Establishing ID..." : "ESTABLISH SAFESPEND ID"}
+              {loading ? "VERIFYING..." : "ACTIVATE ACCOUNT"}
             </button>
-          </div>
 
-          <p className="text-xs font-bold text-center text-[var(--color-text-muted)]">
-            Already authenticated?{" "}
-            <Link className="text-[var(--color-primary)] hover:underline ml-1" to="/login">
-              Portal Access
-            </Link>
-          </p>
-        </form>
+            <button
+              type="button"
+              onClick={() => setIsOtpStep(false)}
+              className="w-full text-xs font-black uppercase tracking-widest text-[var(--color-text-muted)] hover:text-primary transition-colors"
+            >
+              Change Details
+            </button>
+          </form>
+        )}
       </div>
     </AuthLayout>
   );

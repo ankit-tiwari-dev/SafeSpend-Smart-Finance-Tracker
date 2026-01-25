@@ -37,12 +37,17 @@ export async function registerUser(req, res) {
       profileImageUrl,
     });
 
-    // Send welcome email on new account creation (email/password registration)
+    // Generate OTP for email verification
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    await user.save();
+
+    // Send verification email
     try {
-      await sendWelcomeEmailViaGmail(user);
+      await sendOTPEmailViaGmail(user.email, otp);
     } catch (emailErr) {
-      console.error("Error sending welcome email:", emailErr);
-      // Don't block registration if email send fails
+      console.error("Error sending verification email:", emailErr);
     }
 
     res.status(201).json({
@@ -71,6 +76,14 @@ export async function loginUser(req, res) {
     const user = await User.findOne({ email });
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    if (!user.isVerified) {
+      return res.status(401).json({
+        message: "Account not verified. Please verify your email first.",
+        isNotVerified: true,
+        email: user.email
+      });
     }
 
     res.status(200).json({
@@ -241,6 +254,49 @@ export async function verifyOTP(req, res) {
     res.status(200).json({ message: "OTP verified successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error verifying OTP", error: error.message });
+  }
+}
+
+// Verify Sign-Up OTP
+export async function verifySignupOTP(req, res) {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({ message: "Email and OTP are required" });
+  }
+
+  try {
+    const user = await User.findOne({
+      email,
+      otp,
+      otpExpires: { $gt: Date.now() },
+      isVerified: false
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    user.isVerified = true;
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+
+    // Send welcome email after verification
+    try {
+      await sendWelcomeEmailViaGmail(user);
+    } catch (emailErr) {
+      console.error("Error sending welcome email:", emailErr);
+    }
+
+    res.status(200).json({
+      message: "Account verified successfully",
+      id: user._id,
+      user,
+      token: generateToken(user._id),
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error verifying sign-up", error: error.message });
   }
 }
 

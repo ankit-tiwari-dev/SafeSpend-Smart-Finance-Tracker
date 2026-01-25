@@ -11,7 +11,9 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const [emailStatus, setEmailStatus] = useState(null); 
+  const [emailStatus, setEmailStatus] = useState(null);
+  const [isUnverified, setIsUnverified] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
   const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -57,9 +59,24 @@ const LoginPage = () => {
         navigate("/dashboard");
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Login failed, please try again."
-      );
+      if (err.response?.data?.isNotVerified) {
+        setIsUnverified(true);
+        setUnverifiedEmail(err.response.data.email);
+        setError("Your account is not verified.");
+      } else {
+        setError(
+          err.response?.data?.message || "Login failed, please try again."
+        );
+      }
+    }
+  };
+
+  const handleResendOTP = async () => {
+    try {
+      await axiosInstance.post(API_PATHS.AUTH.SEND_OTP, { email: unverifiedEmail });
+      navigate(`/verify-signup?email=${encodeURIComponent(unverifiedEmail)}`);
+    } catch (err) {
+      setError("Failed to generate verification protocol.");
     }
   };
 
@@ -117,10 +134,21 @@ const LoginPage = () => {
           </div>
 
           {error && (
-            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
-              <p className="text-xs font-black text-red-500 uppercase tracking-widest text-center">
-                {error}
-              </p>
+            <div className="space-y-4">
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
+                <p className="text-xs font-black text-red-500 uppercase tracking-widest text-center">
+                  {error}
+                </p>
+              </div>
+              {isUnverified && (
+                <button
+                  type="button"
+                  onClick={handleResendOTP}
+                  className="w-full text-[10px] font-black uppercase tracking-widest text-[var(--color-primary)] hover:underline flex items-center justify-center gap-2"
+                >
+                  Verify Your Account Now
+                </button>
+              )}
             </div>
           )}
 
