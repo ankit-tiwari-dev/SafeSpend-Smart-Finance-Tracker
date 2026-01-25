@@ -28,7 +28,7 @@ export async function registerUser(req, res) {
   // Upgrade: Perform advanced verification (MX, SMTP, Entropy) with Rate Limiting
   const validation = await validateEmailDomain(email, req.ip);
   if (!validation.valid) {
-    return res.status(validation.rateLimited ? 429 : 200).json({
+    return res.status(validation.rateLimited ? 429 : 400).json({
       invalid: true,
       message: validation.message
     });
@@ -215,7 +215,7 @@ export async function checkEmailExists(req, res) {
     // Perform advanced verification (MX, SMTP, Entropy) with Rate Limiting
     const validation = await validateEmailDomain(email, req.ip);
     if (!validation.valid) {
-      return res.status(validation.rateLimited ? 429 : 200).json({
+      return res.status(validation.rateLimited ? 429 : 400).json({
         exists: false,
         invalid: true,
         message: validation.message

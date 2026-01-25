@@ -1,4 +1,4 @@
-import validate from "deep-email-validator";
+import { validate } from "deep-email-validator";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
 // 1. Hourly attempt limiter (5 per hour)
@@ -31,8 +31,8 @@ function isGibberish(prefix) {
     const uniqueRatio = uniqueChars / prefix.length;
 
     // Flag if it looks like a keyboard smash
-    if (vowelRatio < 0.1 && prefix.length > 6) return true;
-    if (uniqueRatio > 0.8 && prefix.length > 8) return true;
+    if (vowelRatio < 0.12 && prefix.length > 6) return true;
+    if (uniqueRatio >= 0.8 && prefix.length > 8) return true;
 
     return false;
 }
@@ -107,7 +107,12 @@ export async function validateEmailDomain(email, ip) {
         return { valid: true, message: "ID routing verified." };
     } catch (error) {
         console.error(`Deep validation failed for ${email}:`, error.message);
-        // Fallback for network issues during validation
+
+        // If it's a real failure (e.g. invalid syntax but validator threw), we might want to count it.
+        // But if it's a network error, maybe not.
+        // Given the current context, we want to count it if it's an invalid input.
+        await failureLimiter.consume(ip).catch(() => { });
+
         return { valid: false, message: professionalErrorMessage };
     }
 }

@@ -17,7 +17,7 @@ const SignUpPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [emailStatus, setEmailStatus] = useState(null); // 'taken', 'available', 'checking'
+  const [emailStatus, setEmailStatus] = useState(null); // 'taken', 'available', 'checking', 'invalid'
   const [isOtpStep, setIsOtpStep] = useState(false);
   const [otp, setOtp] = useState("");
 
@@ -38,7 +38,12 @@ const SignUpPage = () => {
         setEmailStatus("available");
       }
     } catch (err) {
-      setEmailStatus(null);
+      if (err.response?.data?.invalid) {
+        setEmailStatus("invalid");
+        setError(err.response.data.message);
+      } else {
+        setEmailStatus(null);
+      }
     }
   };
 
@@ -151,6 +156,11 @@ const SignUpPage = () => {
                 {emailStatus === "available" && (
                   <p className="absolute -bottom-5 left-0 text-[10px] font-black uppercase text-emerald-500 tracking-widest">
                     ID AVAILABLE
+                  </p>
+                )}
+                {emailStatus === "invalid" && (
+                  <p className="absolute -bottom-5 left-0 text-[10px] font-black uppercase text-red-500 tracking-widest animate-pulse">
+                    INVALID IDENTIFIER
                   </p>
                 )}
               </div>
