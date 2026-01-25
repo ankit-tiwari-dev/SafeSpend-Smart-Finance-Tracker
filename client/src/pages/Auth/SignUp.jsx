@@ -65,6 +65,13 @@ const SignUpPage = () => {
         profileImageUrl = imgUploadRes.imageUrl || "";
       }
 
+      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
+        fullName: trimmedName,
+        email: trimmedEmail,
+        password,
+        profileImageUrl,
+      });
+
       if (response.data) {
         setIsOtpStep(true);
       }
