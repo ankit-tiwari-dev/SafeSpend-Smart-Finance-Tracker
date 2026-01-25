@@ -63,6 +63,8 @@ const LoginPage = () => {
         setIsUnverified(true);
         setUnverifiedEmail(err.response.data.email);
         setError("Your account is not verified.");
+      } else if (!err.response) {
+        setError("Network failure. Check system connectivity and security protocols.");
       } else {
         setError(
           err.response?.data?.message || "Login failed, please try again."

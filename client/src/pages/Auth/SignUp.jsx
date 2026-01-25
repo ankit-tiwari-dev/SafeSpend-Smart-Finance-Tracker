@@ -76,7 +76,11 @@ const SignUpPage = () => {
         setIsOtpStep(true);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Sign up failed, please try again.");
+      if (!err.response) {
+        setError("Connection protocol failed. Ensure backend is active and permits this origin (CORS).");
+      } else {
+        setError(err.response?.data?.message || "Sign up failed, please try again.");
+      }
     } finally {
       setLoading(false);
     }

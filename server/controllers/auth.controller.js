@@ -26,18 +26,28 @@ export async function registerUser(req, res) {
 
   try {
     const userExists = await User.findOne({ email });
+
+    let user;
     if (userExists) {
-      return res.status(400).json({ message: "Email already in use" });
+      if (userExists.isVerified) {
+        return res.status(400).json({ message: "ID ALREADY INITIALIZED (Email in use)" });
+      }
+      // If not verified, allow updating details and re-sending OTP
+      user = userExists;
+      user.fullName = fullName;
+      user.password = password;
+      user.profileImageUrl = profileImageUrl;
+    } else {
+      // Create new unverified user
+      user = new User({
+        fullName,
+        email,
+        password,
+        profileImageUrl,
+      });
     }
 
-    const user = await User.create({
-      fullName,
-      email,
-      password,
-      profileImageUrl,
-    });
-
-    // Generate OTP for email verification
+    // Generate/Refresh OTP for email verification
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     user.otp = otp;
     user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
