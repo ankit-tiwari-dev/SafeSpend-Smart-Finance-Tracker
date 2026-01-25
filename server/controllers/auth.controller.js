@@ -5,6 +5,7 @@ import Budget from "../models/budget.model.js";
 import Goal from "../models/goal.model.js";
 import jwt from "jsonwebtoken";
 import { sendWelcomeEmailViaGmail, sendOTPEmailViaGmail } from "../utils/googleMailer.js";
+import { validateEmailDomain } from "../utils/emailValidator.js";
 
 
 // Generate JWT token
@@ -22,6 +23,12 @@ export async function registerUser(req, res) {
 
   if (!fullName || !email || !password) {
     return res.status(400).json({ message: "All fields are required" });
+  }
+
+  // Upgrade: Perform advanced verification (MX, SMTP, Entropy)
+  const validation = await validateEmailDomain(email);
+  if (!validation.valid) {
+    return res.status(200).json({ invalid: true, message: validation.message });
   }
 
   try {
@@ -85,7 +92,7 @@ export async function loginUser(req, res) {
   try {
     const user = await User.findOne({ email });
     if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Authentication failure. Access denied." });
     }
 
     if (!user.isVerified) {
@@ -202,6 +209,12 @@ export async function checkEmailExists(req, res) {
   if (!email) return res.status(400).json({ message: "Email is required" });
 
   try {
+    // Perform advanced verification (MX, SMTP, Entropy)
+    const validation = await validateEmailDomain(email);
+    if (!validation.valid) {
+      return res.status(200).json({ exists: false, invalid: true, message: validation.message });
+    }
+
     const user = await User.findOne({ email });
     res.status(200).json({ exists: !!user });
   } catch (error) {
@@ -326,7 +339,7 @@ export async function resetPassword(req, res) {
     });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid or expired OTP" });
+      return res.status(400).json({ message: "Security protocol failed. Code mismatch or expired." });
     }
 
     user.password = newPassword;

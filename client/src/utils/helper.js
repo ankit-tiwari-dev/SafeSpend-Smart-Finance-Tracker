@@ -50,7 +50,7 @@ const fmt = (d) => moment(d).format("DD MMM");
 
 export const prepareExpanseBarChartData = (data = []) => {
   const grouped = {};
-  
+
   if (data.length === 0) return [];
 
   let maxDate = new Date(Math.max(...data.map(d => new Date(d.date))));
@@ -65,13 +65,13 @@ export const prepareExpanseBarChartData = (data = []) => {
     const d = new Date(maxDate);
     d.setDate(d.getDate() - (29 - i));
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    
-    return { 
-      date: fmt(d), 
-      amount: grouped[key] || 0, 
-      formattedAmount: formatAmount(grouped[key] || 0) 
+
+    return {
+      date: fmt(d),
+      amount: grouped[key] || 0,
+      formattedAmount: formatAmount(grouped[key] || 0)
     };
-  });  
+  });
 };
 
 export const prepareIncomeBarChartData = (data = []) => {
@@ -91,7 +91,7 @@ export const prepareIncomeBarChartData = (data = []) => {
     d.setDate(d.getDate() - (29 - i));
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     return { date: fmt(d), amount: grouped[key] || 0, formattedAmount: formatAmount(grouped[key] || 0) };
-  });  
+  });
 };
 
 export const prepareExpenseLineChartData = (data = []) => {
@@ -102,7 +102,7 @@ export const prepareExpenseLineChartData = (data = []) => {
     amount: item?.amount,
     formattedAmount: formatAmount(item?.amount),
     category: item?.category,
-  }));  
+  }));
 
   return chartData;
 };
