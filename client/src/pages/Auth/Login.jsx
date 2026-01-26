@@ -190,7 +190,7 @@ const LoginPage = () => {
 
           {/* Signup Link */}
           <p className="text-xs font-bold text-center text-[var(--color-text-muted)] pt-6">
-            New operative?{" "}
+            Don't have portal access?{" "}
             <Link
               className="text-[var(--color-primary)] hover:underline ml-1"
               to="/signup"

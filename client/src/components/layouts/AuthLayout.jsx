@@ -9,31 +9,34 @@ const AuthLayout = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-[var(--color-bg)] overflow-hidden">
       {/* Left Surface: Portal Entrance Form */}
-      <div className="flex-1 flex flex-col p-6 sm:p-12 md:p-16 lg:p-24 relative z-10">
-        {/* Branding Core */}
-        <Link to="/" className="flex items-center gap-4 group mb-auto">
-          <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl shadow-white/5 group-hover:rotate-[20deg] transition-all duration-500 -mt-1 bg-white/5">
-            <img
-              src={APP_LOGO}
-              alt="SafeSpend Logo"
-              width="48"
-              height="48"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="flex flex-col">
-            <h2 className="text-xl font-black tracking-tight text-[var(--color-text)] leading-none">
-              SafeSpend
-            </h2>
-            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary/40 leading-none mt-1">
-              Premium 3.0
-            </span>
-          </div>
-        </Link>
+      <div className="flex-1 flex flex-col p-6 sm:p-12 md:p-16 lg:px-20 lg:pt-5 lg:pb-20 relative z-10 overflow-y-auto">
+        {/* Main Body - Grouped Content */}
+        <div className="max-w-xl w-full mx-auto mt-6 sm:mt-12 md:mt-16 lg:mt-4 lg:mb-auto animate-in fade-in slide-in-from-bottom-8 duration-700 pb-12">
+          {/* Branding Core */}
+          <Link to="/" className="flex items-center gap-4 sm:gap-6 group mb-10 sm:mb-16">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl shadow-white/5 -mt-1 bg-white/5">
+              <img
+                src={APP_LOGO}
+                alt="SafeSpend Logo"
+                width="48"
+                height="48"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex flex-col">
+              <h2 className="text-xl font-black tracking-tight text-[var(--color-text)] leading-none">
+                SafeSpend
+              </h2>
+              <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary/40 leading-none mt-1">
+                Premium 3.0
+              </span>
+            </div>
+          </Link>
 
-        {/* Content Container */}
-        <div className="max-w-md w-full mx-auto my-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
-          {children}
+          {/* Content Container */}
+          <div className="w-full">
+            {children}
+          </div>
         </div>
 
         {/* Legal/Footer Core */}

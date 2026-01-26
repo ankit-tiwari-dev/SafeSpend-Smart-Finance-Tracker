@@ -31,7 +31,7 @@ const LandingPage = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const isAuthenticated = !!localStorage.getItem("token");
 
-    const handleGetStarted = () => navigate(isAuthenticated ? "/dashboard" : "/signup");
+    const handleGetStarted = () => navigate(isAuthenticated ? "/dashboard" : "/login");
 
     const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
