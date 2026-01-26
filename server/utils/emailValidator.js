@@ -87,18 +87,29 @@ export async function validateEmailDomain(email, ip) {
             validateSMTP: true,
         });
 
-        if (!res.valid) {
-            await failureLimiter.consume(ip).catch(() => { }); // Count as failure
-            // Check if it's a disposable email
-            if (res.validators.disposable && !res.validators.disposable.valid) {
+        const validators = res.validators;
+
+        // CRITICAL FAILURES: Syntax, Disposable, and Domain Existence (MX)
+        const isSyntaxValid = validators.regex?.valid;
+        const isDomainValid = validators.mx?.valid;
+        const isNotDisposable = validators.disposable?.valid;
+
+        if (!isSyntaxValid || !isDomainValid || !isNotDisposable) {
+            await failureLimiter.consume(ip).catch(() => { });
+
+            if (!isNotDisposable) {
                 return { valid: false, message: "Disposable email providers are not permitted for elite access." };
             }
 
-            // For most other failures (SMTP, MX) return the professional error
             return {
                 valid: false,
                 message: professionalErrorMessage
             };
+        }
+
+        // ADVISORY FAILURES: SMTP Handshake
+        if (!validators.smtp?.valid) {
+            console.warn(`SMTP check failed for ${email} (likely port 25 block), but Domain/Syntax passed. Proceeding.`);
         }
 
         // Success: Reset failure count for this IP
