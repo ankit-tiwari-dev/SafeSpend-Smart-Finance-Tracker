@@ -25,7 +25,7 @@ export async function registerUser(req, res) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  // Upgrade: Perform advanced verification (MX, SMTP, Entropy) with Rate Limiting
+  // Perform primary validation (Syntax, MX, Disposable) with Rate Limiting
   const validation = await validateEmailDomain(email, req.ip);
   if (!validation.valid) {
     return res.status(validation.rateLimited ? 429 : 400).json({
@@ -212,7 +212,7 @@ export async function checkEmailExists(req, res) {
   if (!email) return res.status(400).json({ message: "Email is required" });
 
   try {
-    // Perform advanced verification (MX, SMTP, Entropy) with Rate Limiting
+    // Perform primary validation (Syntax, MX, Disposable) with Rate Limiting
     const validation = await validateEmailDomain(email, req.ip);
     if (!validation.valid) {
       return res.status(validation.rateLimited ? 429 : 400).json({

@@ -14,44 +14,19 @@ const failureLimiter = new RateLimiterMemory({
 });
 
 /**
- * Calculates the entropy of a string to detect "gibberish" or random prefixes.
- * Lower entropy generally means more structure, but for email prefixes, 
- * extremely high unique-character-to-length ratios in short strings often indicate random typing.
- */
-function isGibberish(prefix) {
-    if (prefix.length < 5) return false; // Too short to judge accurately
-
-    const uniqueChars = new Set(prefix.toLowerCase().replace(/[^a-z]/g, "")).size;
-    const vowelCount = (prefix.match(/[aeiou]/gi) || []).length;
-
-    // Heuristic 1: Very low vowel ratio (typical of random consonant strings like 'sdgfd')
-    const vowelRatio = vowelCount / prefix.length;
-
-    // Heuristic 2: Very high unique character count relative to length
-    const uniqueRatio = uniqueChars / prefix.length;
-
-    // Flag if it looks like a keyboard smash
-    if (vowelRatio < 0.12 && prefix.length > 6) return true;
-    if (uniqueRatio >= 0.8 && prefix.length > 8) return true;
-
-    return false;
-}
-
-/**
- * Upgraded Email Validation:
+ * Simple Email Validation:
  * 1. Syntax check
- * 2. Entropy / Gibberish detection
+ * 2. MX records check (Domain existence)
  * 3. Disposable email provider check
- * 4. SMTP Handshake (Mailbox existence)
+ * 
+ * Reliability: We rely on OTP verification for mailbox-level validity.
  */
 export async function validateEmailDomain(email, ip) {
-    const prefix = email.split("@")[0];
     const professionalErrorMessage = "Account not found. Please verify your credentials or register a new account.";
     const securityTriggerMsg = "Security check triggered. Too many attempts from this connection. Please try again in an hour.";
 
     // 0. Rate Limiting Check
     try {
-        // Check failure block first (15 mins)
         const failRes = await failureLimiter.get(ip);
         if (failRes && failRes.remainingPoints <= 0) {
             return {
@@ -60,8 +35,6 @@ export async function validateEmailDomain(email, ip) {
                 message: "Security threat detected. Connection blocked for 15 minutes due to multiple invalid IDs."
             };
         }
-
-        // Check hourly limit (5 per hour)
         await hourlyLimiter.consume(ip);
     } catch (limitRes) {
         return {
@@ -71,20 +44,11 @@ export async function validateEmailDomain(email, ip) {
         };
     }
 
-    // 1. Entropy Analysis (Gibberish Detection)
-    if (isGibberish(prefix)) {
-        await failureLimiter.consume(ip).catch(() => { }); // Count as failure
-        return {
-            valid: false,
-            message: "Unrecognized Identifier. Please provide a standard contact protocol."
-        };
-    }
-
     try {
-        // 2. Deep Validation (Syntax, MX, Disposable, SMTP Handshake)
+        // 1. Core Validation (Syntax, MX, Disposable)
         const res = await validate({
             email: email,
-            validateSMTP: true,
+            validateSMTP: false, // SMTP check is unreliable and removed as per request
         });
 
         const validators = res.validators;
@@ -107,23 +71,13 @@ export async function validateEmailDomain(email, ip) {
             };
         }
 
-        // ADVISORY FAILURES: SMTP Handshake
-        if (!validators.smtp?.valid) {
-            console.warn(`SMTP check failed for ${email} (likely port 25 block), but Domain/Syntax passed. Proceeding.`);
-        }
-
         // Success: Reset failure count for this IP
         await failureLimiter.delete(ip).catch(() => { });
 
         return { valid: true, message: "ID routing verified." };
     } catch (error) {
-        console.error(`Deep validation failed for ${email}:`, error.message);
-
-        // If it's a real failure (e.g. invalid syntax but validator threw), we might want to count it.
-        // But if it's a network error, maybe not.
-        // Given the current context, we want to count it if it's an invalid input.
+        console.error(`Validation failed for ${email}:`, error.message);
         await failureLimiter.consume(ip).catch(() => { });
-
         return { valid: false, message: professionalErrorMessage };
     }
 }
