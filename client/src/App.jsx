@@ -17,6 +17,8 @@ import Profile from "./pages/Dashboard/Profile";
 import LandingPage from "./pages/LandingPage";
 import PrivacyPolicy from "./pages/Public/PrivacyPolicy";
 import TermsAndConditions from "./pages/Public/TermsAndConditions";
+import Contact from "./pages/Public/Contact";
+import Feedback from "./pages/Public/Feedback";
 
 import UserProvider from "./context/UserContext";
 import { Toaster } from "react-hot-toast";
@@ -70,6 +72,8 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/verify-signup" element={<VerifySignUp />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/feedback" element={<Feedback />} />
             <Route path="/dashboard" element={<Home />} />
             <Route path="/income" element={<Income />} />
             <Route path="/expense" element={<Expense />} />

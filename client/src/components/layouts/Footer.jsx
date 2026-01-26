@@ -61,7 +61,8 @@ const Footer = () => {
             <ul className="space-y-4 text-[11px] font-black uppercase tracking-widest text-[var(--color-text-muted)]">
               <li><a href="#" className="hover:text-primary transition-colors">Repository</a></li>
               <li><a href="#" className="hover:text-primary transition-colors">Terminal API</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Support</a></li>
+              <li><Link to="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
+              <li><Link to="/feedback" className="hover:text-primary transition-colors">Feedback</Link></li>
             </ul>
           </div>
 
