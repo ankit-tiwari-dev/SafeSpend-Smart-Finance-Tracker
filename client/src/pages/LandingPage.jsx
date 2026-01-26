@@ -30,9 +30,7 @@ const testimonials = [
 const LandingPage = () => {
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const isAuthenticated = !!localStorage.getItem("token");
-
-    const handleGetStarted = () => navigate(isAuthenticated ? "/dashboard" : "/login");
+    const handleGetStarted = () => navigate("/signup");
 
     const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
@@ -268,7 +266,7 @@ const LandingPage = () => {
             </section>
             <section id="feedback" className="py-24 bg-[var(--color-bg)] relative overflow-hidden">
                 <div className="max-w-4xl mx-auto text-center mb-16 px-4">
-                    <span className="text-primary text-sm font-bold uppercase tracking-widest mb-2 block">Testimonials</span>
+                    <span className="text-primary text-sm font-bold uppercase tracking-widest mb-2 block">Feedback</span>
                     <h2 className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-[var(--color-text)] to-[var(--color-text-muted)]">
                         Loved by thousands
                     </h2>
@@ -370,7 +368,7 @@ const LandingPage = () => {
                         <ul className="space-y-4 text-sm text-[var(--color-text-muted)]">
                             <li><a href="#features" className="hover:text-primary transition-colors">Features</a></li>
                             <li><a href="#security" className="hover:text-primary transition-colors">Security</a></li>
-                            <li><a href="#feedback" className="hover:text-primary transition-colors">Testimonials</a></li>
+                            <li><a href="#feedback" className="hover:text-primary transition-colors">Feedback</a></li>
                         </ul>
                     </div>
 

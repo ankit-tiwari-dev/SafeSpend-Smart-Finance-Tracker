@@ -141,4 +141,4 @@ vite.config.ts.timestamp-*
 # Local test validation files
 server/test_validation.js
 server/test_output*.txt
-
+server/debug_smtp_out.txt
