@@ -1,18 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LuMail, LuUser, LuMessageSquare, LuSend, LuArrowLeft } from "react-icons/lu";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/apiPaths";
 import axios from "axios";
+import { UserContext } from "../../context/UserContext";
+
 const Contact = () => {
     const navigate = useNavigate();
+    const { user } = useContext(UserContext);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
-        email: "",
         subject: "",
         message: ""
     });
+
+    useEffect(() => {
+        if (user) {
+            setFormData(prev => ({ ...prev, name: user.fullName || "" }));
+        }
+    }, [user]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,11 +30,16 @@ const Contact = () => {
         e.preventDefault();
         setLoading(true);
 
+        const submitData = {
+            ...formData,
+            email: user?.email
+        };
+
         try {
-            await axios.post(`${BASE_URL}/api/v1/contact`, formData);
+            await axios.post(`${BASE_URL}/api/v1/contact`, submitData);
             toast.success("Message sent successfully!");
-            setFormData({ name: "", email: "", subject: "", message: "" });
-            setTimeout(() => navigate('/'), 2000);
+            setFormData({ name: user?.fullName || "", subject: "", message: "" });
+            setTimeout(() => navigate('/dashboard'), 2000);
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to send message.");
         } finally {
@@ -96,22 +109,6 @@ const Contact = () => {
                                     required
                                     className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl py-3 pl-11 pr-4 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-medium placeholder:text-[var(--color-text-muted)]/50"
                                     placeholder="John Doe"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-widest text-[var(--color-text-muted)] pl-1">Email Address</label>
-                            <div className="relative">
-                                <LuMail className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl py-3 pl-11 pr-4 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-medium placeholder:text-[var(--color-text-muted)]/50"
-                                    placeholder="john@example.com"
                                 />
                             </div>
                         </div>

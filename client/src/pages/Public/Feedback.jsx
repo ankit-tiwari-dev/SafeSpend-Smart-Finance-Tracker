@@ -1,18 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { LuStar, LuMessageCircle, LuSend, LuArrowLeft } from "react-icons/lu";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/apiPaths";
 import axios from "axios";
+import { UserContext } from "../../context/UserContext";
+
 const Feedback = () => {
     const navigate = useNavigate();
+    const { user } = useContext(UserContext);
     const [loading, setLoading] = useState(false);
     const [rating, setRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
     const [formData, setFormData] = useState({
         category: "General Feedback",
-        comment: "",
-        email: "" // Optional
+        comment: ""
     });
 
     const categories = ["General Feedback", "Feature Request", "Bug Report", "Other"];
@@ -28,12 +30,18 @@ const Feedback = () => {
         }
         setLoading(true);
 
+        const submitData = {
+            ...formData,
+            rating,
+            email: user?.email
+        };
+
         try {
-            await axios.post(`${BASE_URL}/api/v1/feedback`, { ...formData, rating });
+            await axios.post(`${BASE_URL}/api/v1/feedback`, submitData);
             toast.success("Thank you for your feedback!");
-            setFormData({ category: "General Feedback", comment: "", email: "" });
+            setFormData({ category: "General Feedback", comment: "" });
             setRating(0);
-            setTimeout(() => navigate('/'), 2000);
+            setTimeout(() => navigate('/dashboard'), 2000);
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to submit feedback.");
         } finally {
@@ -80,7 +88,7 @@ const Feedback = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6">
                         <div className="space-y-2">
                             <label className="text-xs font-bold uppercase tracking-widest text-[var(--color-text-muted)] pl-1">Category</label>
                             <select
@@ -94,18 +102,7 @@ const Feedback = () => {
                                 ))}
                             </select>
                         </div>
-
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-widest text-[var(--color-text-muted)] pl-1">Email (Optional)</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl py-3 px-4 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-medium placeholder:text-[var(--color-text-muted)]/50"
-                                placeholder="For follow-up"
-                            />
-                        </div>
+                        {/* Email field removed */}
                     </div>
 
                     <div className="space-y-2">
