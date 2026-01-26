@@ -32,7 +32,7 @@ const Navbar = ({ activeMenu, toggleSideMenu, isSideMenuOpen }) => {
             to="/dashboard"
             className="flex items-center gap-3 group min-w-0"
           >
-            <div className="flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl overflow-hidden flex items-center justify-center shadow-lg group-hover:rotate-[10deg] transition-all duration-500 bg-white/5">
+            <div className="flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl overflow-hidden flex items-center justify-center shadow-lg transition-all duration-500 bg-white/5">
               <img
                 src={APP_LOGO}
                 alt="SafeSpend Logo"

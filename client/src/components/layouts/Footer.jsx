@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { LuChartPie, LuTwitter, LuLinkedin, LuInstagram, LuFacebook } from "react-icons/lu";
 
+import APP_LOGO from "../../assets/images/safespend_logo.png";
+
 const Footer = () => {
   const socialIcons = [
     { Icon: LuTwitter, label: "Twitter" },
@@ -19,8 +21,14 @@ const Footer = () => {
         {/* Branding Section */}
         <div className="space-y-8 max-w-sm">
           <div className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-[var(--color-brand-logo)] rounded-2xl flex items-center justify-center shadow-2xl shadow-[0_8px_32px_color-mix(in_srgb,var(--color-brand-logo),transparent_80%)] group-hover:rotate-[15deg] transition-transform duration-500">
-              <LuChartPie className="text-[var(--color-brand-logo-contrast)] text-xl" />
+            <div className="w-10 h-10 bg-[var(--color-brand-logo)] rounded-2xl flex items-center justify-center shadow-2xl shadow-[0_8px_32px_color-mix(in_srgb,var(--color-brand-logo),transparent_80%)] transition-transform duration-500 overflow-hidden">
+              <img
+                src={APP_LOGO}
+                alt="SafeSpend Logo"
+                width="40"
+                height="40"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-black tracking-tight text-[var(--color-text)] uppercase">SafeSpend</span>
