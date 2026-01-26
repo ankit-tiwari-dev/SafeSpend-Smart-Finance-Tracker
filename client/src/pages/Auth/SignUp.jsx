@@ -198,7 +198,6 @@ const SignUpPage = () => {
               </button>
             </div>
 
-            {/* Divider */}
             <div className="relative py-4">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-[var(--color-divider)]"></span>

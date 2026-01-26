@@ -152,9 +152,7 @@ export async function deleteAccount(req, res) {
 
     res.status(200).json({ message: "Account deleted successfully" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error deleting account", error: error.message });
+    res.status(500).json({ message: "Error deleting account", error: error.message });
   }
 }
 

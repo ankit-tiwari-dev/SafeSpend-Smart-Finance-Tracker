@@ -161,7 +161,6 @@ const LoginPage = () => {
             AUTHORIZE ACCESS
           </button>
 
-          {/* Divider */}
           <div className="relative py-4">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-[var(--color-divider)]"></span>
@@ -173,7 +172,6 @@ const LoginPage = () => {
             </div>
           </div>
 
-          {/* Google/SafeSpend ID Login */}
           <button
             type="button"
             onClick={() => (window.location.href = `${BASE_URL}/api/v1/auth/google`)}

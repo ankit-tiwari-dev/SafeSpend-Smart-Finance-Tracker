@@ -7,10 +7,9 @@ const hourlyLimiter = new RateLimiterMemory({
     duration: 3600, // 1 hour
 });
 
-// 2. Failure block limiter (3 fails in 15 mins)
 const failureLimiter = new RateLimiterMemory({
     points: 3,
-    duration: 900, // 15 mins
+    duration: 900,
 });
 
 /**
